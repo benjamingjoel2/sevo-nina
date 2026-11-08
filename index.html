@@ -879,5 +879,6 @@ document.getElementById("enter").addEventListener("click",()=>{
 });
 snd.addEventListener("click",e=>{ e.stopPropagation(); try{ if(Birds.on){Birds.stop();userMuted=true;} else {userMuted=false;Birds.start();} }catch(err){} paint(); });
 </script>
+<script src="rsvp.js"></script>
 </body>
 </html>

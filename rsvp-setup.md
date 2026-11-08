@@ -55,7 +55,7 @@ Send each guest their own link (WhatsApp, email, a QR code on a card — anythin
 | international | `yes` / `no`                | `no` hides the travel logistics |
 | side          | `nina` / `sevo` / `both`    | for your own sorting |
 | message       | (optional)                  | a personal line for that guest |
-| ninaNote / sevoNote | (optional)            | replaces Nina's / Sevo's letter for that guest |
+| ninaNote / sevoNote | (not used any more)   | the letters are now handwritten images, the same for everyone |
 | link          | (filled in automatically)   | the personal invitation link to send |
 
 If someone replies twice, their row in **RSVPs** is updated (the *Replies* column counts how often) and you get a "✏️ RSVP updated" WhatsApp.

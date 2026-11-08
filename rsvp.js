@@ -35,7 +35,12 @@
   fetch(SHEET_URL + "?id=" + encodeURIComponent(guestId))
     .then(r => r.json())
     .then(out => {
-      if (out && out.ok && out.guest && out.guest.names) { guest = { ...guest, ...out.guest }; showGuest(); }
+      if (out && out.ok && out.guest && out.guest.names) {
+        const g = { ...out.guest };
+        // custom letters only apply if the page still has text spots for them (the notes are handwritten images now)
+        ["ninaNote", "sevoNote"].forEach(k => { if (!document.getElementById(k)) delete g[k]; });
+        guest = { ...guest, ...g }; showGuest();
+      }
     })
     .catch(() => {});
 })();

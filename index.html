@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1a2118">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Nina & Sevo — Save the Date</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Pinyon+Script&family=Caveat:wght@400;500&family=Jost:wght@300;400&display=swap" rel="stylesheet">
@@ -13,6 +15,12 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
   body{font-family:"Jost",system-ui,sans-serif;font-weight:300;color:var(--cream);background:#1f271d;overflow-x:hidden}
+  /* Edge-to-edge immersive: extend into notch + home indicator areas */
+  @supports(padding-top:env(safe-area-inset-top)){
+    .hero,.gate,.sound-prompt{padding-top:env(safe-area-inset-top)}
+    .gate-photo,.gate-veil,.hero-photo,.hero-veil,.bg,.sound-prompt-bg{top:calc(-1 * env(safe-area-inset-top))}
+    nav.actionbar{padding-bottom:calc(1.05rem + env(safe-area-inset-bottom)) !important}
+  }
   .hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;justify-content:center;text-align:center;padding:6rem 1.5rem 7rem;overflow:hidden}
   .bg{position:absolute;inset:-4%;background:url("valley.jpg") center 60%/cover no-repeat;animation:drift 40s ease-in-out infinite alternate;filter:saturate(.9)}
   @keyframes drift{from{transform:scale(1.04) translateX(-1%)}to{transform:scale(1.1) translateX(1%)}}
@@ -39,7 +47,7 @@
   .hero{padding-top:clamp(9rem,22vh,14rem);align-items:flex-start}
   .names{white-space:nowrap}
   .greeting{position:absolute;top:clamp(1.2rem,3vw,2.2rem);left:clamp(1.2rem,3vw,2.4rem);z-index:2;text-align:left;max-width:min(460px,70vw);opacity:0;animation:rise 2s .2s ease forwards}
-  .greeting .dear{margin-bottom:.4rem}
+  .greeting .dear{margin-bottom:.15rem}
   @media (min-width:641px){.greeting .dear{white-space:nowrap}}
   .greeting .personal{margin:.9rem 0 0;text-align:left}
   .links{position:absolute;right:clamp(1.5rem,5vw,4rem);bottom:2.6rem;z-index:2;text-align:right;font-size:.95rem;color:#e3dac6;letter-spacing:.03em}
@@ -88,19 +96,24 @@
   .hand p{margin:0}
   .hand .sig{text-align:right;margin-top:.6rem;font-weight:500}
   .fold{height:1px;margin:1.6rem -2.4rem;border-top:1px dashed rgba(60,60,55,.35)}
-  .modal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(20,28,18,.55);padding:1rem}
+  .modal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(20,28,18,.55);padding:1rem;backdrop-filter:blur(2px)}
   .modal.open{display:flex}
-  .sheet{background:#eceae4;color:#3d3d39;max-width:440px;width:100%;padding:2.4rem 2rem;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}
-  .sheet h2{font-family:"Pinyon Script",cursive;font-weight:400;font-size:2.6rem;color:#5b5b55}
-  .sheet p{margin:.4rem 0 1.4rem;font-style:italic}
-  .opts{display:flex;gap:.8rem;justify-content:center;margin-bottom:1.2rem;flex-wrap:wrap}
-  .opts button,.sheet .send{font:inherit;font-size:1rem;padding:.7rem 1.2rem;border:1px solid #6d6c66;background:transparent;color:#3d3d39;cursor:pointer}
-  .opts button.on{background:#4a4a46;color:#eceae4}
-  .sheet label{display:block;text-align:left;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;margin:.8rem 0 .3rem}
-  .sheet input,.sheet textarea{width:100%;font:inherit;font-size:1.05rem;padding:.6rem;border:1px solid #c9c6be;background:#f6f5f1;color:#3d3d39}
-  .sheet .send{margin-top:1.4rem;background:#4a4a46;color:#eceae4;letter-spacing:.25em;text-transform:uppercase;font-size:.85rem;padding:.9rem 2rem}
-  .sheet .close{display:block;margin:1rem auto 0;background:none;border:0;font:inherit;font-style:italic;color:#8a8880;cursor:pointer}
-  .status{min-height:1.3em;margin-top:.8rem;font-style:italic;color:#6d6c66}
+  .sheet{background:#f4eed6;color:#2f3a2c;max-width:380px;width:100%;padding:2.2rem 1.8rem 1.8rem;text-align:center;border-radius:3px;box-shadow:0 8px 40px rgba(0,0,0,.3);aspect-ratio:460/620;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+  .sheet h2{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:clamp(.68rem,2.2vw,.82rem);letter-spacing:.25em;text-transform:uppercase;color:#2f3a2c}
+  .sheet #rsvpFor{margin:.6rem 0 1.2rem;font-family:"Cardo","Times New Roman",Times,serif;font-style:italic;font-size:1.1rem;letter-spacing:.03em;color:#4a5442}
+  .opts{display:flex;gap:.7rem;justify-content:center;margin-bottom:1.2rem;flex-wrap:wrap}
+  .opts button,.sheet .send{font-family:"Cormorant Garamond",serif;font-size:.95rem;padding:.65rem 1.1rem;border:1px solid #7d8c6a;background:transparent;color:#2f3a2c;cursor:pointer;letter-spacing:.08em;transition:all .25s}
+  .opts button:hover{background:rgba(125,140,106,.12)}
+  .opts button.on{background:#7d8c6a;color:#f4eed6}
+  .sheet label{display:block;text-align:left;font-family:"Cormorant Garamond",serif;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;margin:.8rem 0 .3rem;color:#5a6650}
+  .sheet input,.sheet textarea{width:100%;font-family:"Cardo","Times New Roman",Times,serif;font-size:1rem;padding:.55rem;border:1px solid #c4bfa6;background:rgba(255,255,255,.35);color:#2f3a2c;border-radius:2px}
+  .sheet input:focus,.sheet textarea:focus{outline:none;border-color:#7d8c6a}
+  .sheet .send{margin-top:1.2rem;background:#7d8c6a;color:#f4eed6;letter-spacing:.22em;text-transform:uppercase;font-size:.8rem;padding:.8rem 1.8rem;border-color:#7d8c6a;transition:all .25s}
+  .sheet .send:hover{background:#5a6650;border-color:#5a6650}
+  .sheet .close{display:block;margin:.8rem auto 0;background:none;border:0;font-family:"Cormorant Garamond",serif;font-style:italic;color:#8a8a7a;cursor:pointer;font-size:.85rem;letter-spacing:.05em}
+  .sheet .close:hover{color:#2f3a2c}
+  .status{min-height:1.3em;margin-top:.7rem;font-family:"Cardo","Times New Roman",Times,serif;font-style:italic;font-size:.9rem;color:#5a6650}
+  @media(max-width:640px){.sheet{max-width:92vw;aspect-ratio:auto;max-height:85vh;padding:1.8rem 1.4rem 1.4rem}}
   .sound{position:fixed;right:1.2rem;top:1.2rem;z-index:15;width:46px;height:46px;border-radius:50%;border:1px solid rgba(246,241,231,.6);background:rgba(20,28,18,.35);backdrop-filter:blur(6px);color:var(--cream);cursor:pointer;display:flex;align-items:center;justify-content:center}
   .sound svg{width:20px;height:20px}
   footer{position:absolute;bottom:1.4rem;left:0;right:0;text-align:center;font-size:.85rem;letter-spacing:.25em;text-transform:uppercase;color:#d8cdb4;opacity:.85}
@@ -303,7 +316,7 @@
   .hero-photo{position:absolute;inset:-3%;background:url("cover_jungle2.jpg") center 40%/cover no-repeat;animation:drift 40s ease-in-out infinite alternate;z-index:0}
   .hero-veil{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(20,28,18,.25) 0%, rgba(20,28,18,.6) 75%);z-index:0}
   /* parchment card fills viewport minus 60px all around */
-  .hero-card-frame{position:relative;z-index:2;width:100%;height:calc(100vh - 120px);height:calc(100svh - 120px);background:#f2ead4 url("fog_sketch.jpg") center 54%/110% auto no-repeat;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4);border-radius:2px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:clamp(2rem,5vh,4rem) clamp(2rem,6vw,4rem) clamp(2rem,5vh,4rem)}
+  .hero-card-frame{position:relative;z-index:2;width:100%;height:calc(100vh - 120px);height:calc(100svh - 120px);background:#f2ead4 url("fog_sketch.jpg") center 54%/110% auto no-repeat;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4);border-radius:2px;overflow:visible;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:clamp(2rem,5vh,4rem) clamp(2rem,6vw,4rem) clamp(2rem,5vh,4rem)}
   .card{margin:0 auto !important;width:auto !important;flex:1 !important;max-width:600px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:clamp(.5rem,4vh,3rem) !important}
   .cta-stack{margin-top:0;flex-shrink:0;padding-bottom:.5rem;margin-bottom:clamp(2.5rem,12vh,6rem)}
   /* logo same size as gate; soundnote same position */
@@ -352,7 +365,7 @@
   .actionbar .rsvp:hover{background:#f3ede0 !important;color:#1c1f1a !important}
   @media (max-width:640px){.actionbar .rsvp{font-size:.74rem}}
   /* penjors come in from the sides, higher up, not from the bottom corners */
-  .penjor{bottom:24vh !important;height:56vh !important}
+  .penjor{bottom:60vh !important;height:56vh !important}
   .penjor.l{left:-3vh !important}.penjor.r{right:-3vh !important}
   @media (max-width:640px){.penjor{height:38vh !important;bottom:30vh !important}.penjor.l{left:-11vw !important}.penjor.r{right:-11vw !important}}
   /* text in the same leaf green as the illustration instead of near-black */
@@ -430,7 +443,7 @@
   /* ---- mobile layout ---- */
   @media (max-width:640px){
     .hero{padding:16px !important}
-    .hero-card-frame{width:100% !important;height:calc(100svh - 32px) !important;padding:1.5rem 1.2rem 1.2rem !important}
+    .hero-card-frame{width:100% !important;height:calc(100svh - 32px) !important;padding:.8rem 1.2rem 1.2rem !important}
     .hero-logo-wrap{top:1rem !important;left:1rem !important}
     .hero-logo-wrap .gate-logo{width:clamp(44px,11vw,62px) !important}
     .hero-soundnote{top:1rem !important;right:1rem !important;font-size:.85rem !important;height:40px;line-height:40px}
@@ -461,7 +474,7 @@
   /* darker backdrop behind concierge, logistics and note panels */
   .modal,.paper-overlay{background:rgba(6,10,6,.86) !important;backdrop-filter:blur(6px) !important}
   /* tablets + phones: venue on two lines, smaller text, button a little lower */
-  @media (max-width:1024px){
+  @media (max-width:1200px){
     main.hero .card .place{white-space:normal !important;width:auto !important;max-width:none !important;position:static !important;left:auto !important;transform:none !important;font-size:clamp(.62rem,2.3vw,.82rem) !important;letter-spacing:.12em !important}
     main.hero .card .place .place-sep{display:none !important}
     main.hero .card .place .place-l1,main.hero .card .place .place-l2{display:block !important}
@@ -475,11 +488,11 @@
     main.hero .invite-note{font-size:.58rem !important}
   }
   /* penjors sit on the card's own edges, inside the card */
-  main.hero .hero-card-frame .penjor{position:absolute !important;bottom:6% !important;height:56% !important;z-index:0}
-  main.hero .hero-card-frame .penjor.l{left:-1.5% !important;right:auto !important}
-  main.hero .hero-card-frame .penjor.r{right:-1.5% !important;left:auto !important}
+  main.hero .hero-card-frame .penjor{position:absolute !important;bottom:6% !important;height:90% !important;z-index:0}
+  main.hero .hero-card-frame .penjor.l{left:-12% !important;right:auto !important}
+  main.hero .hero-card-frame .penjor.r{right:-12% !important;left:auto !important}
   .hero-card-frame .card,.hero-card-frame .cta-stack{position:relative;z-index:1}
-  @media (max-width:640px){main.hero .hero-card-frame .penjor{height:36% !important;bottom:27% !important}main.hero .hero-card-frame .penjor.l{left:-9% !important}main.hero .hero-card-frame .penjor.r{right:-9% !important}}
+  @media (max-width:640px){main.hero .hero-card-frame .penjor{height:50% !important;bottom:18% !important}main.hero .hero-card-frame .penjor.l{left:-16% !important}main.hero .hero-card-frame .penjor.r{right:-16% !important}}
   /* when the sound note wraps (phones), "sound of Java" takes the second line */
   @media (max-width:640px){.sn2{display:block}}
   /* ── ONE FRAME, NO SCROLL: final word on sizing ── */
@@ -553,14 +566,64 @@
   #venue .vtitle + .vbody,#concierge .vtitle + p{margin-top:1.3rem !important}
   #venue .vbody p,#concierge .sheet p{font-size:clamp(.88rem,3.2vw,1.02rem) !important;line-height:1.45 !important}
   #venue .vbody .vgap{margin-top:.7rem}
-  #concierge .sheet.vcard .close{margin-top:auto !important;color:#1c3322 !important;text-shadow:0 0 8px rgba(255,255,255,.85)}
+  #concierge .paper.vcard{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 0%,#f4eed6 47%,rgba(244,238,214,.55) 56%,rgba(244,238,214,0) 68%),url("concierge_sketch.jpg") center bottom/100% auto no-repeat,#f4eed6 !important}
+#concierge .vtitle{font-size:clamp(.72rem,2.5vw,.92rem) !important;letter-spacing:.28em;text-shadow:none !important}
+#concierge .vbody{padding-left:clamp(26px,9%,44px) !important;padding-right:clamp(26px,9%,44px) !important}
+#concierge .vbody p{color:#2f4a2c !important;font-size:clamp(.88rem,3.2vw,1.02rem) !important;text-shadow:none !important}
+#concierge .vtitle + .vbody{margin-top:1.3rem !important}
   /* invite card text a little smaller */
   main.hero .hero-card-frame .card{zoom:.88}
-#venue .vtitle{font-size:clamp(.72rem,2.5vw,.92rem) !important;letter-spacing:.28em}
-#venue .paper.vcard{background-position:center,center bottom !important;background-size:auto,100% auto !important}
+#venue .vtitle,#notes .vtitle,#logistics .vtitle{font-size:clamp(.68rem,2.2vw,.82rem) !important;letter-spacing:.25em}
+#venue .paper.vcard{background-position:center,center calc(100% - 14px) !important;background-size:auto,104% auto !important}
+#venue .vbody{padding-left:clamp(26px,9%,44px) !important;padding-right:clamp(26px,9%,44px) !important;box-sizing:border-box}
+
+#notes .paper.vcard{background:radial-gradient(ellipse at 30% 20%,rgba(255,252,240,.55),rgba(255,252,240,0) 60%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .38  0 0 0 0 .22  0 0 0 .13 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),#f4eed6 !important;aspect-ratio:auto !important;height:auto !important;max-height:92vh !important;overflow-y:auto !important;justify-content:flex-start !important;padding:2.4rem clamp(1.4rem,7%,2.2rem) 2rem !important}
+#notes .vtitle{text-shadow:none !important;margin-bottom:1.1rem !important}
+#notes .vtitle + *{margin-top:0 !important}
+#notes .inknote{display:block;width:100%;height:auto;margin:0 auto}
+#notes .fold{width:46% !important;margin:1.1rem auto !important;border-top:1px solid rgba(28,51,34,.28) !important}
+
+@media (max-width:600px){
+  #venue .vbody{padding-left:clamp(14px,5%,22px) !important;padding-right:clamp(14px,5%,22px) !important}
+  #venue .vbody p{font-size:clamp(.78rem,2.8vw,.88rem) !important;line-height:1.4 !important}
+  #venue .paper.vcard{background-size:auto,88% auto !important;background-position:center,center calc(100% - 8px) !important}
+  #concierge .paper.vcard{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 55%,rgba(244,238,214,.75) 62%,rgba(244,238,214,0) 78%),url("concierge_sketch.jpg") center bottom/100% auto no-repeat,#f4eed6 !important}
+  #concierge .vbody{padding-left:clamp(14px,5%,22px) !important;padding-right:clamp(14px,5%,22px) !important}
+  #concierge .vbody p{font-size:clamp(.78rem,2.8vw,.88rem) !important;line-height:1.4 !important}
+}
+
+#logistics .paper.vcard.logi-card{aspect-ratio:460/620 !important;max-height:80vh !important;overflow:hidden !important;justify-content:flex-start !important;padding:1.6rem clamp(1rem,5%,1.6rem) .8rem !important;background:#f4eed6 !important}
+.route-block{margin-bottom:.9rem}
+.route-map{display:block;width:74%;height:auto;border-radius:3px;margin:0 auto}
+.route-cap{font-size:clamp(.68rem,2.2vw,.82rem) !important;color:#2f4a2c !important;text-align:center;margin:.15rem 0 0;font-style:italic;line-height:1.3}
+.logi-footer{font-size:clamp(.68rem,2.4vw,.82rem) !important;color:#2f4a2c !important;text-align:center;margin-top:auto !important;padding-top:.5rem;opacity:.8;font-style:italic}
+#logistics .vtitle{text-shadow:none !important;margin-bottom:.2rem !important}
+#logistics .vtitle + *{margin-top:0 !important}
+/* ── Sound prompt (pre-gate) ── */
+.sound-prompt{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;text-align:center;background:#1a2118;transition:opacity .8s ease}
+.sound-prompt.gone{opacity:0;pointer-events:none}
+.sound-prompt-bg{position:absolute;inset:0;background:url("valley.jpg") center 60%/cover no-repeat;opacity:.25;filter:saturate(.7) blur(2px)}
+.sound-prompt-content{position:relative;z-index:1;max-width:360px;padding:2rem;opacity:0;animation:rise 1.8s .3s ease forwards}
+.sound-prompt-icon{width:48px;height:48px;margin:0 auto 1.4rem;color:#e3dac6;opacity:.8}
+.sound-prompt-text{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:clamp(1.1rem,3vw,1.35rem);color:#e3dac6;line-height:1.5;letter-spacing:.04em}
+.sound-prompt-text em{font-style:italic;color:#f3e8cc}
+.sound-prompt-btn{display:inline-block;margin-top:2rem;font-family:"Cormorant Garamond",serif;font-size:.82rem;letter-spacing:.28em;text-transform:uppercase;padding:.75rem 2rem;background:transparent;border:1px solid rgba(227,218,198,.5);color:#e3dac6;cursor:pointer;transition:all .3s}
+.sound-prompt-btn:hover{background:rgba(227,218,198,.12);border-color:#e3dac6}
+.sound-prompt-skip{display:block;margin:1.2rem auto 0;background:none;border:0;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:.82rem;color:rgba(227,218,198,.5);cursor:pointer;letter-spacing:.03em}
+.sound-prompt-skip:hover{color:#e3dac6}
 </style>
 </head>
 <body>
+<div class="sound-prompt" id="soundPrompt">
+  <div class="sound-prompt-bg"></div>
+  <div class="sound-prompt-content">
+    <div class="sound-prompt-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg></div>
+    <p class="sound-prompt-text">Turn on the <em>sound of Java</em><br>for the best experience</p>
+    <button class="sound-prompt-btn" id="soundYes">Turn on sound</button>
+    <button class="sound-prompt-skip" id="soundSkip">continue without sound</button>
+  </div>
+</div>
+
 <div class="gate" id="gate">
   <div class="gate-photo"></div><div class="gate-veil"></div>
   <div class="gate-logo-wrap">
@@ -666,10 +729,17 @@
 </main>
 
 <div class="paper-overlay" id="logistics" role="dialog" aria-modal="true" aria-label="Logistical information">
-  <div class="paper">
+  <div class="paper letter vcard logi-card">
     <button class="paper-close" id="closeL" aria-label="Close">×</button>
-    <img src="routes.jpg" alt="Recommended routes for international guests. Route 1: fly into Jakarta, then take the train to Yogyakarta. Route 2: fly into Bali, then take a short flight to Yogyakarta. Do get in touch.">
-    <p class="touch">The wedding is around 1 hour away from Yogyakarta.<br>We are happy to help you with transfers, accommodation, or anything else you need.</p>
+    <h2 class="vtitle">Recommended routes for international guests</h2>
+    <div class="route-block">
+      <img class="route-map" src="route1_map.jpg" alt="Route 1: Fly into Jakarta, train to Yogyakarta">
+      <p class="route-cap">Fly into Jakarta, then take a scenic train to Yogyakarta.</p>
+    </div>
+    <div class="route-block">
+      <img class="route-map" src="route2_map.jpg" alt="Route 2: Fly into Bali, short flight to Yogyakarta">
+      <p class="route-cap">Fly into Bali, then take a short flight to Yogyakarta.</p>
+    </div>
   </div>
 </div>
 
@@ -678,8 +748,8 @@
     <button class="paper-close" id="closeV" aria-label="Close">×</button>
     <h2 class="vtitle">About the venue</h2>
     <div class="vbody">
-                  <p class="vgap">Set amid volcanoes, rainforest and the Borobudur Temple.</p>
-      <p class="vgap">Expect a traditional Javanese oath ceremony, cultural night, local cuisine, blended with German culture, spread over two days.</p>
+      <p>Set amid volcanoes, rice fields and tropical rainforest, beside the Borobudur Temple.</p>
+      <p class="vgap">Expect a traditional ceremony and local cuisine, with one night celebrating Javanese culture and another international party with a touch of German tradition, over two days.</p>
     </div>
   </div>
 </div>
@@ -688,24 +758,21 @@
   <div class="paper letter vcard">
     <button class="paper-close" id="closeN" aria-label="Close">×</button>
     <h2 class="vtitle">Our personal note</h2>
-    <section class="hand">
-      <p id="ninaNote">My dearest friend,<br><br>We're getting married! Sevo and I wanted you to hear it from us. You have been such a special part of my life, and it would mean the world to have you there with us as we start this new chapter. Thank you for everything.</p>
-      <p class="sig">With love, Nina</p>
-    </section>
+    <img class="inknote" src="nina_ink.png" alt="Handwritten note from Nina: Dear family & friends, we're getting married and would love to celebrate with you! Since travelling to Indonesia will be a long journey for many of you, we appreciate you taking the time and making the effort. Hopefully you can enjoy Indonesia beyond the wedding weekend! We are thankful to have you! Ich hab euch lieb, Nina">
     <div class="fold"></div>
-    <section class="hand">
-      <p id="sevoNote">We can't wait to welcome you to my home in Indonesia. Come for the wedding, stay for the warmth, the food and the jungle. It will be an honour to have you with us.</p>
-      <p class="sig">See you in Java, Sevo</p>
-    </section>
+    <img class="inknote" src="sevo_ink.png" alt="Handwritten note from Sevo: After this journey around the world, we've decided to choose Indonesia as the place to celebrate this moment. I look forward to welcoming you to my home, and sharing my passion for culture, food, and nature with you, to new stories together. See you in Java, Sevo">
   </div>
 </div>
 
-<div class="modal" id="concierge" role="dialog" aria-modal="true">
-  <div class="sheet vcard">
-    <h2 class="vtitle">Contact concierge</h2>
-    <p>Our concierge will gladly help with travel, rooms, transfers, or anything else you need.</p>
-    <p id="conciergeDetails">Contact details coming soon.</p>
-    <button class="close" type="button" id="closeC">close</button>
+<div class="paper-overlay" id="concierge" role="dialog" aria-modal="true" aria-label="Contact concierge">
+  <div class="paper letter vcard">
+    <button class="paper-close" id="closeC" aria-label="Close">×</button>
+    <h2 class="vtitle">Contact Concierge</h2>
+    <div class="vbody">
+      <p>Our concierge will gladly assist with travel, accommodation, transfers, tourism bookings, or anything else you may need.</p>
+      <p class="vgap">Should you wish to stay at the wedding venue, rooms have been reserved for our guests. Please do not book directly — simply let us know, and we will secure your place.</p>
+      <p class="vgap" id="conciergeDetails">Contact details coming soon.</p>
+    </div>
   </div>
 </div>
 
@@ -714,12 +781,12 @@
     <h2>RSVP</h2>
     <p id="rsvpFor"></p>
     <div class="opts" id="opts">
-      <button type="button" data-v="yes">Joyfully attending</button>
-      <button type="button" data-v="no">Regretfully declining</button>
+      <button type="button" data-v="yes">Attending</button>
+      <button type="button" data-v="no">Declining</button>
     </div>
     <label for="count">Number of guests</label>
     <input id="count" type="number" min="0" max="10" value="2">
-    <label for="msg">A note for us (optional)</label>
+    <label for="msg">Additional notes (optional)</label>
     <textarea id="msg" rows="3"></textarea>
     <button class="send" type="submit">Send</button>
     <div class="status" id="status"></div>
@@ -847,18 +914,22 @@ const Birds=(function(){
         gam=ctx.createGain(); gam.gain.value=0.45; gam.connect(bus);   // gamelan sits quietly underneath
         rev=reverb();
       }
-      ctx.resume();
-      const now=ctx.currentTime;
-      master.gain.cancelScheduledValues(now); master.gain.setValueAtTime(master.gain.value,now); master.gain.linearRampToValueAtTime(0.9, now+1.5);
-      if(!on){
-        on=true;
-        nextT=ctx.currentTime+1.2; gamelanTick();
-        at(0.2, monkey);                       // opens with the monkey
-        at(R(2.2,3.0), t=>bird(t,0.08));       // bird 2–3 s later
-        at(6, gecko);                          // then the gecko
-        timers.push(setTimeout(moment, 15000)); // then a moment about every 10 s
-        timers.push(setTimeout(chirps, 9000));
-      }
+      const go=()=>{
+        const now=ctx.currentTime;
+        master.gain.cancelScheduledValues(now); master.gain.setValueAtTime(master.gain.value,now); master.gain.linearRampToValueAtTime(0.9, now+1.5);
+        if(!on){
+          on=true;
+          nextT=ctx.currentTime+1.2; gamelanTick();
+          at(0.2, monkey);
+          at(R(2.2,3.0), t=>bird(t,0.08));
+          at(6, gecko);
+          timers.push(setTimeout(moment, 15000));
+          timers.push(setTimeout(chirps, 9000));
+        }
+      };
+      // On mobile, resume() is async — schedule sounds only after context is running
+      const p=ctx.resume();
+      if(p&&p.then) p.then(go); else go();
     },
     stop(){
       on=false; timers.forEach(clearTimeout); timers=[];
@@ -874,7 +945,7 @@ const DEFAULT_ID="lisa-calvin";
 const guestId=(location.hash.replace("#","")||DEFAULT_ID).toLowerCase();
 function nameFromId(id){ // fallback when the guest list can't be read
   const parts=id.split("-").filter(Boolean).map(w=>w[0].toUpperCase()+w.slice(1));
-  return parts.length>1? parts.slice(0,-1).join(", ")+" and "+parts.at(-1) : (parts[0]||"Friend");
+  return parts.length>1? parts.slice(0,-1).join(", ")+" & "+parts.at(-1) : (parts[0]||"Friend");
 }
 let guest={id:guestId,names:nameFromId(guestId)};
 function showGuest(){
@@ -964,7 +1035,7 @@ document.getElementById("rsvpForm").addEventListener("submit",async e=>{
       message:document.getElementById("msg").value.trim(),
       at:new Date().toISOString()
     });
-    status.textContent= answer==="yes" ? "Thank you — we can't wait to celebrate with you." : "Thank you — you'll be missed.";
+    status.textContent= answer==="yes" ? "Thank you for letting us know — more details to follow." : "Thank you for letting us know. We hope to see you on another occasion.";
   }catch(err){ status.textContent="Sorry, that didn't go through. Please try again."; }
 });
 
@@ -979,26 +1050,25 @@ const ICON_ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 const ICON_OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
 function paint(){snd.innerHTML=Birds.on?ICON_ON:ICON_OFF}
 
-// Start the sound from the very beginning: right away if the browser allows it,
-// otherwise on the guest's very first touch, click, key or scroll anywhere on the cover.
+// Sound prompt screen — user chooses before the gate appears
 let userMuted=false;
-function startSound(){ if(userMuted||Birds.on) return; try{Birds.start()}catch(e){} paint(); }
-// On desktop, try autoplay immediately (no user gesture needed in some browsers)
-(function tryAutoplay(){
-  if(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) return; // skip on mobile — wait for gesture
-  try{
-    const AC=window.AudioContext||window.webkitAudioContext, probe=new AC();
-    const ok=probe.state==="running"; probe.close();
-    if(ok) startSound();
-  }catch(e){}
-})();
-// On mobile (especially iOS), AudioContext MUST be created inside a click/touchend handler
-const EVS=["pointerdown","touchend","click","keydown"];
-function firstGesture(e){
-  if(e.target && e.target.closest && e.target.closest("#snd")) return; // the sound button handles itself
-  startSound(); EVS.forEach(ev=>window.removeEventListener(ev,firstGesture,true));
+function startSound(){ if(userMuted||Birds.on) return; try{Birds.start(); setTimeout(paint,120);}catch(e){} paint(); }
+
+const soundPrompt=document.getElementById("soundPrompt");
+function dismissPrompt(){
+  soundPrompt.classList.add("gone");
+  setTimeout(()=>soundPrompt.remove(),900);
 }
-EVS.forEach(ev=>window.addEventListener(ev,firstGesture,{passive:true,capture:true}));
+document.getElementById("soundYes").addEventListener("click",()=>{
+  userMuted=false;
+  startSound();
+  dismissPrompt();
+});
+document.getElementById("soundSkip").addEventListener("click",()=>{
+  userMuted=true;
+  paint();
+  dismissPrompt();
+});
 snd.hidden=false; paint();
 document.getElementById("enter").addEventListener("click",()=>{
   startSound();
@@ -1008,7 +1078,7 @@ document.getElementById("enter").addEventListener("click",()=>{
   document.body.classList.add("opened");         // invitation content rises in underneath
   setTimeout(()=>gate.classList.add("gone"),750);
 });
-snd.addEventListener("click",e=>{ e.stopPropagation(); try{ if(Birds.on){Birds.stop();userMuted=true;} else {userMuted=false;Birds.start();} }catch(err){} paint(); });
+snd.addEventListener("click",e=>{ e.stopPropagation(); try{ if(Birds.on){Birds.stop();userMuted=true;} else {userMuted=false;Birds.start(); setTimeout(paint,120);} }catch(err){} paint(); });
 </script>
 <script src="rsvp.js"></script>
 </body>

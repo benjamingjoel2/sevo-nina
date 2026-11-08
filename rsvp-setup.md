@@ -40,17 +40,23 @@ Save, then go back to the editor, pick **testWhatsApp** and click **Run**. You s
    It's not a password; it only accepts RSVPs and looks up guest names.
 
 ## Your guest list (Guests tab)
-One row per invitation. The `id` is what goes after `#` in their link: `https://sevo-nina.vercel.app/#anna-ben`.
+One row per invitation (a couple or family shares one row and one link).
+**Just type or paste the names** — the `id` and `link` columns fill in by themselves, e.g.
+`Anna and Ben` → `anna-ben-k3x9` → `https://sevo-nina.vercel.app/#anna-ben-k3x9`.
+The 4 random characters at the end stop people guessing someone else's link.
+After pasting a long list, if any links are missing use the menu **Wedding → Create missing links**.
+Send each guest their own link (WhatsApp, email, a QR code on a card — anything).
 
 | Column        | Example                     | What it does |
 |---------------|-----------------------------|--------------|
-| id            | `anna-ben`                  | lowercase letters, numbers and dashes only |
+| id            | (filled in automatically)   | never change it after the link is sent |
 | names         | `Anna and Ben`              | "For Anna and Ben" on the cover, and in the RSVP |
 | seats         | `2`                         | pre-fills the number of guests |
 | international | `yes` / `no`                | `no` hides the travel logistics |
 | side          | `nina` / `sevo` / `both`    | for your own sorting |
 | message       | (optional)                  | a personal line for that guest |
 | ninaNote / sevoNote | (optional)            | replaces Nina's / Sevo's letter for that guest |
+| link          | (filled in automatically)   | the personal invitation link to send |
 
 If someone replies twice, their row in **RSVPs** is updated (the *Replies* column counts how often) and you get a "✏️ RSVP updated" WhatsApp.
 If a link id isn't on the guest list, the RSVP is still saved and the message says so.

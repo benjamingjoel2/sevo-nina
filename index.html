@@ -296,11 +296,15 @@
       -webkit-mask-image:radial-gradient(ellipse 34% 60% at 50% 60%,#000 70%,transparent 100%) !important;mask-image:radial-gradient(ellipse 34% 60% at 50% 60%,#000 70%,transparent 100%) !important}
     .card{margin-left:0 !important;flex:none}
   }
+  /* logo + soundnote overlaid on hero, outside the card */
+  .hero-logo-wrap{position:absolute;top:1.2rem;left:1.2rem;z-index:3;display:flex;align-items:center;gap:.1rem;opacity:.9;color:#f6f1e7}
+  .hero-logo-wrap .gate-logo{position:static;width:clamp(52px,6vw,80px);height:auto}
+  .hero-soundnote{position:absolute;top:1.2rem;right:1.5rem;z-index:3;font-style:italic;color:#e3dac6;font-size:.95rem;letter-spacing:.04em;height:46px;line-height:46px}
   /* second page floats as a landscape card over the dark jungle from the gate */
   .artpanel{display:none !important}
-  .hero{background:#1f271d url("cover_jungle2.jpg") center 40%/cover no-repeat !important;justify-content:center !important;align-items:center !important;padding:clamp(1.5rem,4vw,3rem) !important;flex-direction:column}
-  /* the existing parchment content sits inside a floating frame with margins */
-  .hero-card-frame{position:relative;z-index:2;width:100%;max-width:1200px;background:#f2ead4 url("fog_sketch.jpg") center calc(62vh - 56.2vw)/100% auto no-repeat;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4);border-radius:2px;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:clamp(3.5rem,8vh,7rem) clamp(3rem,8vw,7rem) clamp(6rem,12vh,10rem)}
+  .hero{background:#1f271d url("cover_jungle2.jpg") center 40%/cover no-repeat !important;justify-content:center !important;align-items:center !important;padding:60px !important;flex-direction:column;position:relative !important}
+  /* card fills the screen minus 60px margin all around */
+  .hero-card-frame{position:relative;z-index:2;width:100%;height:calc(100vh - 120px);height:calc(100svh - 120px);background:#f2ead4 url("fog_sketch.jpg") center calc(62vh - 56.2vw)/100% auto no-repeat;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4);border-radius:2px;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(2.5rem,6vh,5rem) clamp(2rem,6vw,4rem)}
   .card{margin:0 auto !important;width:auto !important;flex:none !important;max-width:640px}
   /* card typography: match the postcard's Times New Roman style */
   .card .wedof,.card .date,.card .place,.card .note{font-family:"Cardo","Times New Roman",Times,serif !important;letter-spacing:.28em !important;text-transform:uppercase !important;font-style:normal !important}
@@ -416,8 +420,8 @@
   @media (max-width:640px){.penjor.l,.penjor.r{bottom:34vh !important}}
   /* ---- mobile layout ---- */
   @media (max-width:640px){
-    .hero{padding:0 !important}
-    .hero-card-frame{width:93vw !important;padding:1.8rem 1.3rem !important}
+    .hero{padding:20px !important}
+    .hero-card-frame{width:100% !important;height:calc(100svh - 40px) !important;padding:1.8rem 1.3rem !important}
     .card{
       margin-top:0 !important;
       width:100% !important
@@ -515,6 +519,13 @@
     <div class="dear" id="dear"></div>
     <p class="personal" id="personal" hidden></p>
   </div>
+  <!-- logo + soundnote persist on hero after gate fades -->
+  <div class="hero-logo-wrap">
+    <span class="gate-initial">N</span>
+    <img class="gate-logo" src="janur_icon_white.png" alt="Nina &amp; Sevo">
+    <span class="gate-initial">S</span>
+  </div>
+  <small class="hero-soundnote">listen to the sound of Java</small>
   <div class="hero-card-frame">
     <div class="card">
       <div class="rule">✦</div>

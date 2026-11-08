@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nina & Sevo — Guest List</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Cormorant Garamond",Georgia,serif;color:#3d3d39;background:#eceae4;min-height:100vh;padding:2.5rem 1.2rem 4rem}
+  .wrap{max-width:1000px;margin:0 auto}
+  header{text-align:center;margin-bottom:2rem}
+  .mono{font-family:"Pinyon Script",cursive;font-size:2.8rem;color:#5b5b55}
+  h1{font-weight:500;letter-spacing:.32em;text-transform:uppercase;font-size:1.1rem;margin-top:.3rem}
+  .sub{font-style:italic;color:#7a7972;margin-top:.3rem}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin:1.8rem 0}
+  .stat{background:#f6f5f1;border:1px solid #d8d5cd;padding:1rem 1.1rem}
+  .stat b{display:block;font-size:2rem;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.1}
+  .stat span{font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:#7a7972}
+  .bar{height:8px;background:#dcd9d1;margin-top:.6rem}
+  .bar i{display:block;height:100%;background:#4a4a46;width:0;transition:width .8s}
+  .tools{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.8rem;align-items:center}
+  .tools input,.tools select{font:inherit;font-size:1rem;padding:.45rem .7rem;border:1px solid #c9c6be;background:#f6f5f1;color:#3d3d39}
+  .tools input{flex:1;min-width:180px}
+  table{width:100%;border-collapse:collapse;background:#f6f5f1;border:1px solid #d8d5cd}
+  th,td{padding:.65rem .8rem;text-align:left;border-bottom:1px solid #e2dfd8;font-size:1.05rem}
+  th{font-weight:500;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:#7a7972;background:#efede7}
+  td.num{font-variant-numeric:tabular-nums}
+  .tag{display:inline-block;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;padding:.15rem .5rem;border:1px solid #b9b5ab}
+  .tag.intl{background:#2f3a2c;color:#ece3cf;border-color:#2f3a2c}
+  .rsvp-yes{color:#3f6b3a;font-weight:600}.rsvp-no{color:#9a4b3c}.rsvp-none{color:#9a978f;font-style:italic}
+  .copy{font:inherit;font-size:.85rem;padding:.25rem .6rem;border:1px solid #9a978f;background:transparent;cursor:pointer;color:#3d3d39}
+  .copy:hover{background:#4a4a46;color:#eceae4}
+  .couple td{background:#ece9e1;font-style:italic}
+  .empty{text-align:center;padding:2rem;font-style:italic;color:#7a7972}
+  .note{margin-top:1rem;font-style:italic;color:#7a7972;font-size:.95rem}
+  @media(max-width:640px){.hide-sm{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="mono">Nina &amp; Sevo</div>
+    <h1>Guest List</h1>
+    <div class="sub">30 – 31 July 2027 · Plataran Borobudur</div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><b id="sPeople">–</b><span>of 200 people</span><div class="bar"><i id="sBar"></i></div></div>
+    <div class="stat"><b id="sInv">–</b><span>Invitations</span></div>
+    <div class="stat"><b id="sNina">–</b><span>Nina's side</span></div>
+    <div class="stat"><b id="sSevo">–</b><span>Sevo's side</span></div>
+    <div class="stat"><b id="sIntl">–</b><span>International</span></div>
+    <div class="stat"><b id="sLocal">–</b><span>Local</span></div>
+    <div class="stat"><b id="sYes">–</b><span>Attending</span></div>
+    <div class="stat"><b id="sNo">–</b><span>Declined</span></div>
+    <div class="stat"><b id="sWait">–</b><span>Awaiting reply</span></div>
+  </div>
+
+  <div class="tools">
+    <input id="q" placeholder="Search names…">
+    <select id="fType"><option value="">All guests</option><option value="intl">International</option><option value="local">Local</option></select>
+    <select id="fSide"><option value="">Anyone's friend</option><option value="nina">Nina's friends</option><option value="sevo">Sevo's friends</option><option value="both">Both</option></select>
+    <select id="fRsvp"><option value="">Any RSVP</option><option value="yes">Attending</option><option value="no">Declined</option><option value="none">No reply yet</option></select>
+  </div>
+
+  <table>
+    <thead><tr><th>Invitation</th><th>People</th><th>Friend of</th><th>Guest type</th><th>RSVP</th><th class="hide-sm">Note</th><th>Link</th></tr></thead>
+    <tbody id="rows"><tr><td colspan="7" class="empty">Loading guest list…</td></tr></tbody>
+  </table>
+  <p class="note">The total of 200 includes the two of you. Each invitation has its own link that greets those guests by name; local guests don't see the travel logistics.</p>
+</div>
+<script>
+const TOTAL=200, COUPLE=2;
+let invitees=[], rsvps={};
+const base=location.href.replace(/guests\.html.*$/,"").replace(/#.*$/,"");
+function docsOf(snap){
+  const list=snap && (snap.docs||snap) || [];
+  return Array.from(list).map(d=>({id:d.id||(d.path||"").split("/").pop(), ...(typeof d.data==="function"?d.data():(d.data||d))}));
+}
+function render(){
+  const q=document.getElementById("q").value.toLowerCase(),
+        ft=document.getElementById("fType").value, fs=document.getElementById("fSide").value, fr=document.getElementById("fRsvp").value;
+  let people=COUPLE, nina=0, sevo=0, intl=0, local=0, yes=0, no=0, wait=0;
+  invitees.forEach(g=>{
+    const n=Number(g.seats)||1; people+=n;
+    g.international===false? local+=n : intl+=n;
+    if(g.side==='nina') nina+=n; else if(g.side==='sevo') sevo+=n; else if(g.side==='both'){nina+=n;sevo+=n;}
+    const r=rsvps[g.id]; if(!r) wait++; else if(r.attending) yes+=Number(r.guests)||0; else no++;
+  });
+  const set=(id,v)=>document.getElementById(id).textContent=v;
+  set("sPeople",people); set("sInv",invitees.length); set("sNina",nina); set("sSevo",sevo); set("sIntl",intl); set("sLocal",local);
+  set("sYes",yes); set("sNo",no); set("sWait",wait);
+  document.getElementById("sBar").style.width=Math.min(100,people/TOTAL*100)+"%";
+
+  const rows=invitees.filter(g=>{
+    const r=rsvps[g.id];
+    if(q && !(g.names||"").toLowerCase().includes(q)) return false;
+    if(fs && (g.side||"")!==fs) return false;
+    if(ft==="intl" && g.international===false) return false;
+    if(ft==="local" && g.international!==false) return false;
+    if(fr==="yes" && !(r&&r.attending)) return false;
+    if(fr==="no" && !(r&&!r.attending)) return false;
+    if(fr==="none" && r) return false;
+    return true;
+  }).sort((a,b)=>(a.names||"").localeCompare(b.names||""));
+  const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  let html=`<tr class="couple"><td>Nina &amp; Sevo</td><td class="num">2</td><td>—</td><td>—</td><td>The couple ♥</td><td class="hide-sm"></td><td></td></tr>`;
+  html+=rows.map(g=>{
+    const r=rsvps[g.id];
+    const rs=!r?'<span class="rsvp-none">awaiting</span>':r.attending?`<span class="rsvp-yes">Attending (${r.guests})</span>`:'<span class="rsvp-no">Declined</span>';
+    return `<tr><td>${esc(g.names)}</td><td class="num">${esc(g.seats||1)}</td>
+      <td>${({nina:"Nina",sevo:"Sevo",both:"Both"})[g.side]||'<span class="rsvp-none">not set</span>'}</td>
+      <td><span class="tag ${g.international===false?"":"intl"}">${g.international===false?"Local":"International"}</span></td>
+      <td>${rs}</td><td class="hide-sm">${esc(r&&r.message||"")}</td>
+      <td><button class="copy" data-id="${esc(g.id)}">Copy link</button></td></tr>`;
+  }).join("");
+  if(!invitees.length) html+=`<tr><td colspan="7" class="empty">No guests yet — the list will appear here.</td></tr>`;
+  document.getElementById("rows").innerHTML=html;
+}
+document.addEventListener("click",async e=>{
+  const b=e.target.closest(".copy"); if(!b) return;
+  try{ await navigator.clipboard.writeText(base+"#"+b.dataset.id); b.textContent="Copied"; }
+  catch{ b.textContent="#"+b.dataset.id; }
+  setTimeout(()=>b.textContent="Copy link",1800);
+});
+["q","fType","fSide","fRsvp"].forEach(id=>document.getElementById(id).addEventListener("input",render));
+render();
+(async()=>{
+  const t=setTimeout(()=>{if(!invitees.length)document.getElementById("rows").innerHTML='<tr><td colspan="7" class="empty">Couldn\'t load the guest list. Make sure you\'re signed in.</td></tr>'},10000);
+  try{
+    const db=await claude.use("db"); if(!db){clearTimeout(t);document.getElementById("rows").innerHTML='<tr><td colspan="7" class="empty">Sign in to see the guest list.</td></tr>';return;}
+    db.collection("invitees").onSnapshot(s=>{clearTimeout(t);invitees=docsOf(s);render();});
+    try{ db.collection("rsvps").onSnapshot(s=>{rsvps={};docsOf(s).forEach(r=>rsvps[r.id]=r);render();}); }catch(e){}
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

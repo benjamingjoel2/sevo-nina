@@ -59,7 +59,7 @@ function fillLinks_() {
     if (!names[i] && !ids[i]) continue;
     if (!ids[i]) {
       let id;
-      do { id = slug_(names[i]) + '-' + Math.random().toString(36).slice(2, 6); } while (taken.has(id));
+      do { id = slug_(names[i]) + '-' + Math.floor(1000 + Math.random() * 9000); } while (taken.has(id));
       taken.add(id); ids[i] = id; changed = true;
     }
     const link = SITE_URL + '#' + ids[i];

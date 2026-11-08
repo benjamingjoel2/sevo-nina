@@ -2,6 +2,12 @@
 // Lives in its own file so the artifact sync never overwrites it; index.html loads it after its own script.
 // It plugs into the page's existing `db` and `guest` variables, so the page's RSVP form works unchanged.
 (function () {
+  // Links made by the Sheet end in 4 random digits (#anna-ben-4821): leave them out of the fallback greeting
+  if (/-\d{4}$/.test(guestId) && guest.names === nameFromId(guestId)) {
+    guest = { ...guest, names: nameFromId(guestId.replace(/-\d{4}$/, "")) };
+    showGuest();
+  }
+
   // Paste the Apps Script web app URL here (Deploy → Manage deployments → Web app URL, ends in /exec)
   const SHEET_URL = "";
 

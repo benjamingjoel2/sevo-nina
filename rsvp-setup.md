@@ -42,8 +42,8 @@ Save, then go back to the editor, pick **testWhatsApp** and click **Run**. You s
 ## Your guest list (Guests tab)
 One row per invitation (a couple or family shares one row and one link).
 **Just type or paste the names** — the `id` and `link` columns fill in by themselves, e.g.
-`Anna and Ben` → `anna-ben-k3x9` → `https://sevo-nina.vercel.app/#anna-ben-k3x9`.
-The 4 random characters at the end stop people guessing someone else's link.
+`Anna and Ben` → `anna-ben-4821` → `https://sevo-nina.vercel.app/#anna-ben-4821`.
+The 4 random digits at the end stop people guessing someone else's link.
 After pasting a long list, if any links are missing use the menu **Wedding → Create missing links**.
 Send each guest their own link (WhatsApp, email, a QR code on a card — anything).
 

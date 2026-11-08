@@ -102,7 +102,7 @@
   .modal.open{display:flex}
   .sheet{position:relative;background:#f4eed6;color:#2f3a2c;width:min(460px,90vw);aspect-ratio:460/620;overflow:hidden;padding:2.6rem 1.6rem 2.2rem;text-align:center;border-radius:2px;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4);display:flex;flex-direction:column;justify-content:center;align-items:center}
   .sheet h2{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:clamp(.68rem,2.2vw,.82rem);letter-spacing:.25em;text-transform:uppercase;color:#2f3a2c}
-  .sheet #rsvpFor{margin:.4rem 0 .8rem;font-family:"Cardo","Times New Roman",Times,serif;font-style:italic;font-size:1rem;letter-spacing:.03em;color:#4a5442}
+  .sheet h2+div,.sheet h2+.opts{margin-top:.5rem}
   .sheet .rsvp-img{display:block;width:70%;height:auto;margin:0 auto .8rem;border-radius:2px;opacity:.85}
   .opts{display:flex;gap:.6rem;justify-content:center;margin-bottom:.8rem;flex-wrap:wrap}
   .opts button,.sheet .send{font-family:"Cormorant Garamond",serif;font-size:.85rem;padding:.5rem .9rem;border:1px solid #7d8c6a;background:transparent;color:#2f3a2c;cursor:pointer;letter-spacing:.08em;transition:all .25s}
@@ -562,10 +562,12 @@
   #venue .paper.vcard{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 47%,rgba(244,238,214,.55) 56%,rgba(244,238,214,0) 68%),url("pavilion_venue_sketch.jpg") center bottom/100% auto no-repeat,#f4eed6 !important}
   #notes .paper.vcard{background:linear-gradient(to bottom,rgba(238,228,203,.92) 0%,rgba(238,228,203,.6) 9%,rgba(10,20,12,.45) 19%,rgba(10,20,12,.8) 34%,rgba(10,20,12,.9) 100%),url("ceremony_sketch.jpg") 50% 40%/cover no-repeat,#1c2a1c !important}
   #concierge .sheet.vcard{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 47%,rgba(244,238,214,.55) 56%,rgba(244,238,214,0) 68%),url("joglo_sketch.jpg") center bottom/100% auto no-repeat,#f4eed6 !important}
-  #modal .sheet{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 60%,rgba(244,238,214,.55) 70%,rgba(244,238,214,0) 82%),url("rsvp-feast.png") center bottom/auto 40% no-repeat,#f4eed6 !important;justify-content:flex-start !important}
-  #modal .sheet .opts{width:100%}
+  #modal .sheet{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 55%,rgba(244,238,214,.55) 65%,rgba(244,238,214,0) 78%),url("rsvp-feast.png") center bottom/100% auto no-repeat,#f4eed6 !important;justify-content:flex-start !important}
+  #modal .sheet .opts{width:100%;margin-bottom:.8rem}
   #modal .sheet .opts button{flex:1}
-  #modal .sheet input,#modal .sheet textarea{box-sizing:border-box}
+  #modal .sheet #nameRow{width:100%;margin-bottom:.6rem}
+  #modal .sheet input,#modal .sheet textarea{box-sizing:border-box;width:100%}
+  @media(max-width:640px){#modal .sheet{padding-top:.6rem !important}#modal .sheet h2{margin:0}#modal .sheet .paper-close{top:.4rem !important}}
   .vcard .vtitle{margin-bottom:0 !important;text-shadow:0 0 18px rgba(245,240,228,.65)}
   .vcard .vtitle + *{margin-top:auto !important}
   .vcard .vbody p,.vcard .hand,.vcard.sheet p{color:#f6f1e7 !important;text-shadow:0 1px 10px rgba(0,0,0,.45)}
@@ -790,10 +792,8 @@
   <form class="sheet" id="rsvpForm" style="position:relative">
     <button class="paper-close" type="button" id="closeM2" style="position:absolute;top:.6rem;right:.7rem;background:none;border:0;font-size:1.3rem;color:#8a8a7a;cursor:pointer;line-height:1">&times;</button>
     <h2>RSVP</h2>
-    <p id="rsvpFor"></p>
     <div id="nameRow" style="display:none">
-      <label for="guestName">Your name</label>
-      <input id="guestName" type="text" placeholder="e.g. Maria & João">
+      <input id="guestName" type="text" placeholder="Your name">
     </div>
     <div class="opts" id="opts">
       <button type="button" data-v="yes">Attending</button>
@@ -976,8 +976,8 @@ let guest=isGeneric
 })();
 function showGuest(){
   document.getElementById("dear").textContent="Dear "+guest.names;
-  document.getElementById("gateTo").textContent=isGeneric ? "Save the Date" : "For "+guest.names;
-  document.getElementById("rsvpFor").textContent=isGeneric ? "Dear Family & Friends" : "for "+guest.names;
+  document.getElementById("gateTo").textContent=isGeneric ? "Dear Family & Friends" : "For "+guest.names;
+  // rsvpFor element removed — no name/greeting in RSVP anymore
   // Show name field in RSVP only for generic visitors
   const nameRow=document.getElementById("nameRow");
   if(nameRow) nameRow.style.display=isGeneric?"block":"none";

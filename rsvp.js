@@ -12,7 +12,7 @@
   }
 
   // Paste the Apps Script web app URL here (Deploy → Manage deployments → Web app URL, ends in /exec)
-  const SHEET_URL = "";
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbyRVqasx_KswHZMumgMWtcy9PPOJc_Wo8iWNLJOgJTjaGoYJIgHlLaU22R1xhwVCry-3w/exec";
 
   if (!SHEET_URL) return;
 

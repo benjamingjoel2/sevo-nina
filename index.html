@@ -630,10 +630,12 @@
 .sound-prompt-icon{width:48px;height:48px;margin:0 auto 1.4rem;color:#e3dac6;opacity:.8}
 .sound-prompt-text{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:clamp(1.1rem,3vw,1.35rem);color:#e3dac6;line-height:1.5;letter-spacing:.04em}
 .sound-prompt-text em{font-style:italic;color:#f3e8cc}
-.sound-prompt-btn{display:inline-block;margin-top:2rem;font-family:"Cormorant Garamond",serif;font-size:.82rem;letter-spacing:.28em;text-transform:uppercase;padding:.75rem 2rem;background:transparent;border:1px solid rgba(227,218,198,.5);color:#e3dac6;cursor:pointer;transition:all .3s}
-.sound-prompt-btn:hover{background:rgba(227,218,198,.12);border-color:#e3dac6}
-.sound-prompt-skip{display:block;margin:1.2rem auto 0;background:none;border:0;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:.82rem;color:rgba(227,218,198,.5);cursor:pointer;letter-spacing:.03em}
-.sound-prompt-skip:hover{color:#e3dac6}
+.sound-prompt-note{margin:.5rem auto 0;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:.82rem;line-height:1.45;color:rgba(227,218,198,.5);letter-spacing:.03em}
+.sound-prompt-btn,.sound-prompt-skip{display:block;width:290px;max-width:100%;margin:.8rem auto 0;box-sizing:border-box;white-space:nowrap;font-family:"Cormorant Garamond",serif;font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;padding:.75rem 1.2rem;cursor:pointer;transition:all .3s;font-style:normal}
+.sound-prompt-btn{margin-top:1.8rem !important;background:#e3dac6;border:1px solid #e3dac6;color:#1f4a2c;font-weight:700}
+.sound-prompt-btn:hover{background:#f3e8cc;border-color:#f3e8cc}
+.sound-prompt-skip{background:transparent;border:1px solid rgba(227,218,198,.5);color:#e3dac6}
+.sound-prompt-skip:hover{background:rgba(227,218,198,.12);border-color:#e3dac6}
 </style>
 <script src="guest-host.js"></script>
 <link rel="icon" href="favicon.ico" sizes="any">
@@ -658,8 +660,9 @@
   <div class="sound-prompt-content">
     <div class="sound-prompt-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg></div>
     <p class="sound-prompt-text">Turn on the <em>sound of Java</em><br>for the best experience</p>
-    <button class="sound-prompt-btn" id="soundYes">Turn on & enter</button>
-    <button class="sound-prompt-skip" id="soundSkip">continue without sound</button>
+    <p class="sound-prompt-note">Sound may not play on some phones.</p>
+    <button class="sound-prompt-btn" id="soundYes">Turn on &amp; view invitation</button>
+    <button class="sound-prompt-skip" id="soundSkip">Continue without sound</button>
   </div>
 </div>
 
@@ -1116,6 +1119,8 @@ function paint(){snd.innerHTML=Birds.on?ICON_ON:ICON_OFF}
 let userMuted=false;
 // Pre-unlock AudioContext on any user gesture so mobile browsers allow sound
 let _audioUnlocked=false;
+// iOS 17+: treat this page's sound as media playback, so it still plays when the phone's silent switch is on
+try{ if(navigator.audioSession) navigator.audioSession.type="playback"; }catch(e){}
 function unlockAudio(){
   if(_audioUnlocked) return;
   _audioUnlocked=true;

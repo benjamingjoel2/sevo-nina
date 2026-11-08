@@ -568,6 +568,7 @@
   #modal .sheet #nameRow{width:100%;margin-bottom:.6rem}
   #modal .sheet input,#modal .sheet textarea{box-sizing:border-box;width:100%}
   @media(max-width:640px){#modal .sheet{padding-top:.6rem !important}#modal .sheet h2{margin:0}#modal .sheet .paper-close{top:.4rem !important}}
+  /* postcards: JS injects a <style> to scale them on mobile */
   .vcard .vtitle{margin-bottom:0 !important;text-shadow:0 0 18px rgba(245,240,228,.65)}
   .vcard .vtitle + *{margin-top:auto !important}
   .vcard .vbody p,.vcard .hand,.vcard.sheet p{color:#f6f1e7 !important;text-shadow:0 1px 10px rgba(0,0,0,.45)}
@@ -1102,6 +1103,20 @@ function paint(){snd.innerHTML=Birds.on?ICON_ON:ICON_OFF}
 
 // Sound prompt screen — user chooses before the gate appears
 let userMuted=false;
+// Pre-unlock AudioContext on any user gesture so mobile browsers allow sound
+let _audioUnlocked=false;
+function unlockAudio(){
+  if(_audioUnlocked) return;
+  _audioUnlocked=true;
+  // Create a temporary context and play a silent buffer to unlock audio on iOS/Android
+  const tmp=new (window.AudioContext||window.webkitAudioContext)();
+  const b=tmp.createBuffer(1,1,22050);
+  const s=tmp.createBufferSource(); s.buffer=b; s.connect(tmp.destination); s.start(0);
+  tmp.resume().then(()=>{ setTimeout(()=>tmp.close(),100); }).catch(()=>{});
+}
+document.addEventListener("touchstart",unlockAudio,{once:true});
+document.addEventListener("touchend",unlockAudio,{once:true});
+document.addEventListener("click",unlockAudio,{once:true});
 function startSound(){ if(userMuted||Birds.on) return; try{Birds.start(); setTimeout(paint,120);}catch(e){} paint(); }
 
 const soundPrompt=document.getElementById("soundPrompt");
@@ -1111,9 +1126,16 @@ function dismissPrompt(){
 }
 document.getElementById("soundYes").addEventListener("click",()=>{
   userMuted=false;
-  startSound();
+  unlockAudio();
+  // Start sound with a small delay to ensure AudioContext is fully unlocked
+  Birds.start();
+  setTimeout(()=>{ if(!Birds.on){Birds.start();} paint(); },200);
+  setTimeout(paint,120);
+  paint();
   dismissPrompt();
 });
+// Also listen for touchend on the button for iOS
+document.getElementById("soundYes").addEventListener("touchend",()=>{unlockAudio();},{passive:true});
 document.getElementById("soundSkip").addEventListener("click",()=>{
   userMuted=true;
   paint();
@@ -1129,6 +1151,22 @@ document.getElementById("enter").addEventListener("click",()=>{
   setTimeout(()=>gate.classList.add("gone"),750);
 });
 snd.addEventListener("click",e=>{ e.stopPropagation(); try{ if(Birds.on){Birds.stop();userMuted=true;} else {userMuted=false;Birds.start(); setTimeout(paint,120);} }catch(err){} paint(); });
+
+// Scale postcards on mobile: render at 460px, CSS-scale down like a screenshot
+(function(){
+  const id='postcard-scale';
+  function applyScale(){
+    const vw=window.innerWidth;
+    let el=document.getElementById(id);
+    if(vw>=500){if(el)el.remove();return;}
+    const s=((vw*0.9)/460).toFixed(4);
+    const css='.paper-overlay .paper.vcard,.modal .sheet,.modal .sheet.vcard{width:460px !important;transform:scale('+s+') !important;transform-origin:center center !important;}';
+    if(!el){el=document.createElement('style');el.id=id;document.head.appendChild(el);}
+    el.textContent=css;
+  }
+  applyScale();
+  window.addEventListener('resize',applyScale);
+})();
 </script>
 <script src="rsvp.js"></script>
 </body>

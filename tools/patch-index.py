@@ -6,6 +6,7 @@ r"""Re-apply this build's changes to index.html after an artifact sync. Safe to 
   3. rsvp.js before </body> (RSVPs + guest list from the Google Sheet)
   4. images inside popups / hidden layers load only when needed (loading="lazy")
   5. old mobile venue line-break typo  content:"\\A"  ->  content:"\A"
+  6. favicon / home-screen icon (favicon.ico, favicon-32.png, apple-touch-icon.png)
 """
 import os, re, sys
 
@@ -32,6 +33,13 @@ def lazy(m):
 s = re.sub(r"<img\b[^>]*>", lazy, s)
 # 5
 s = s.replace('content:"\\\\A";white-space:pre}', 'content:"\\A";white-space:pre}')
+# 6 favicon (green janur logo)
+ICONS = ('<link rel="icon" href="favicon.ico" sizes="any">\n'
+         '<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">\n'
+         '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n')
+if 'href="favicon.ico"' not in s:
+    s = re.sub(r'<link[^>]*rel="(?:shortcut )?icon"[^>]*>\s*', '', s)
+    s = s.replace("</head>", ICONS + "</head>", 1)
 
 # sanity checks the sync relies on
 for needle in ("let db", "let guest", "const guestId", "function nameFromId", "function showGuest", 'db.doc("rsvps/"'):

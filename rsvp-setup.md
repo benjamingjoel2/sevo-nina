@@ -41,15 +41,15 @@ Save, then go back to the editor, pick **testWhatsApp** and click **Run**. You s
 
 ## Your guest list (Guests tab)
 One row per invitation (a couple or family shares one row and one link).
-**Just type or paste the names** — the `id` and `link` columns fill in by themselves, e.g.
-`Anna and Ben` → `anna-ben-4821` → `https://sevo-nina.vercel.app/#anna-ben-4821`.
-The 4 random digits at the end stop people guessing someone else's link.
+**Just type or paste the names**: the `id` and `link` columns fill in by themselves, e.g.
+`Benjamin` → `benjamin` → `https://benjamin.ninasevo.co`, and `Anna and Ben` → `https://anna-ben.ninasevo.co`.
+Two guests with the same name get `benjamin`, `benjamin-2`, … (rename the id before sending if you prefer `benjamin-smith`).
 After pasting a long list, if any links are missing use the menu **Wedding → Create missing links**.
 Send each guest their own link (WhatsApp, email, a QR code on a card — anything).
 
 | Column        | Example                     | What it does |
 |---------------|-----------------------------|--------------|
-| id            | (filled in automatically)   | never change it after the link is sent |
+| id            | (filled in automatically)   | lowercase letters, numbers, dashes; never change it after the link is sent |
 | names         | `Anna and Ben`              | "For Anna and Ben" on the cover, and in the RSVP |
 | seats         | `2`                         | pre-fills the number of guests |
 | international | `yes` / `no`                | `no` hides the travel logistics |

@@ -2,6 +2,9 @@
 // Lives in its own file so the artifact sync never overwrites it; index.html loads it after its own script.
 // It plugs into the page's existing `db` and `guest` variables, so the page's RSVP form works unchanged.
 (function () {
+  // Guest came from their subdomain (benjamin.ninasevo.co): keep the address bar clean
+  if (window.GUEST_FROM_HOST) history.replaceState(null, "", location.pathname + location.search);
+
   // Links made by the Sheet end in 4 random digits (#anna-ben-4821): leave them out of the fallback greeting
   if (/-\d{4}$/.test(guestId) && guest.names === nameFromId(guestId)) {
     guest = { ...guest, names: nameFromId(guestId.replace(/-\d{4}$/, "")) };

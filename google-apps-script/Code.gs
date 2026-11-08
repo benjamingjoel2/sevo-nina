@@ -19,7 +19,8 @@ const RSVP_SHEET = 'RSVPs';
 const GUEST_SHEET = 'Guests';
 const RSVP_HEADERS = ['Guest ID', 'Names', 'Attending', 'Guests', 'Message', 'First reply', 'Last updated', 'Replies', 'Known guest'];
 const GUEST_HEADERS = ['id', 'names', 'seats', 'international', 'side', 'message', 'ninaNote', 'sevoNote', 'link'];
-const SITE_URL = 'https://sevo-nina.vercel.app/';
+const GUEST_DOMAIN = 'ninasevo.co';   // each guest's link: https://<id>.ninasevo.co
+const RESERVED_IDS = ['www', 'mail', 'api', 'admin'];
 
 /** Run this once from the editor (select "setup" → Run) to create both tabs with headers. */
 function setup() {
@@ -59,10 +60,12 @@ function fillLinks_() {
     if (!names[i] && !ids[i]) continue;
     if (!ids[i]) {
       let id;
-      do { id = slug_(names[i]) + '-' + Math.floor(1000 + Math.random() * 9000); } while (taken.has(id));
+      const base = slug_(names[i]);
+      id = base;
+      for (let k = 2; taken.has(id) || RESERVED_IDS.includes(id); k++) id = base + '-' + k;
       taken.add(id); ids[i] = id; changed = true;
     }
-    const link = SITE_URL + '#' + ids[i];
+    const link = 'https://' + ids[i] + '.' + GUEST_DOMAIN;
     if (links[i] !== link) { links[i] = link; changed = true; }
   }
   if (!changed) return;

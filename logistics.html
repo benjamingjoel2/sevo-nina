@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nina & Sevo — Getting There</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{min-height:100vh;font-family:"Cormorant Garamond",Georgia,serif;color:#4a4a46;
+    background-color:#eceae4;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .34 0 0 0 0 .32 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      radial-gradient(ellipse at 50% 40%, #f4f2ee 0%, #e6e3dc 75%, #d9d6cf 100%);
+    background-attachment:fixed;padding:3.5rem 1rem 3rem}
+  .back{position:fixed;top:1rem;left:1rem;font-style:italic;font-size:1.05rem;color:#6d6c66;text-decoration:none;z-index:2}
+  .back:hover{color:#2f3a2c}
+  .card{position:relative;max-width:720px;margin:0 auto;box-shadow:0 18px 50px rgba(0,0,0,.14),0 2px 6px rgba(0,0,0,.06);animation:in 1.2s ease both}
+  .card img{display:block;width:100%;height:auto}
+  .touch{position:absolute;left:12%;right:12%;top:81.4%;text-align:center;color:#2b2b28;font-size:clamp(.72rem,2.55vw,1.12rem);line-height:1.45}
+  @keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<a class="back" id="back" href="index.html">← back</a>
+<div class="card">
+  <img src="routes.jpg" alt="Recommended routes for international guests. Route 1: fly into Jakarta, then take the train to Yogyakarta. Route 2: fly into Bali, then take a short flight to Yogyakarta. Do get in touch.">
+  <p class="touch">The wedding is around 1 hour away from Yogyakarta.<br>We are happy to help you with transfers, accommodation, or anything else you need.</p>
+</div>
+<script>
+  if(location.hash) document.getElementById("back").href="index.html"+location.hash;
+</script>
+</body>
+</html>

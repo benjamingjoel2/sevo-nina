@@ -253,6 +253,8 @@
   /* bottom action bar */
   .links{display:none !important}
   .card-links{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;margin-top:.8rem;position:relative;z-index:5;width:100%;max-width:420px;margin-left:auto;margin-right:auto;justify-items:center;pointer-events:auto}
+  @media (min-width:1025px){.card-links{grid-template-columns:repeat(2,260px);width:auto;max-width:none;justify-content:center}}
+  @media (min-width:641px) and (max-width:1024px){.card-links{grid-template-columns:max-content;width:auto;max-width:none;justify-content:center}.card-links a{min-width:280px}}
   @media (max-width:640px){.card-links{grid-template-columns:1fr;max-width:240px}}
   .card-links a{color:#fff;text-decoration:none;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.5rem 1rem;background:#1f4a2c;border-radius:2px;transition:background .25s;width:100%;white-space:nowrap;-webkit-tap-highlight-color:rgba(255,255,255,.15);touch-action:manipulation;cursor:pointer}
   .card-links a:hover{background:#2c6a3f;text-decoration:none}
@@ -592,9 +594,16 @@
 #concierge .vtitle + .vbody{margin-top:.65rem !important}
   /* invite card text a little smaller */
   main.hero .hero-card-frame .card{zoom:.88}
+  /* phones: main card text larger */
+  @media (max-width:640px){
+    main.hero .hero-card-frame .card .wedof{font-size:.75rem !important}
+    main.hero .hero-card-frame .card .names{font-size:1.9rem !important}
+    main.hero .hero-card-frame .card .date,main.hero .hero-card-frame .card .note{font-size:.73rem !important}
+    main.hero .hero-card-frame .card .place{font-size:.73rem !important}
+  }
 #venue .vtitle,#notes .vtitle,#logistics .vtitle{font-size:min(1.1rem,3.2cqw) !important;letter-spacing:.28em}
 #venue .paper.vcard{background-position:center,center calc(100% - 14px) !important;background-size:auto,104% auto !important}
-#venue .vbody{padding-left:clamp(26px,9%,44px) !important;padding-right:clamp(26px,9%,44px) !important;box-sizing:border-box}
+#venue .vbody,#concierge .vbody{padding-left:6% !important;padding-right:6% !important;box-sizing:border-box}
 
 #notes .paper.vcard{background:radial-gradient(ellipse at 30% 20%,rgba(255,252,240,.55),rgba(255,252,240,0) 60%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .38  0 0 0 0 .22  0 0 0 .13 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),#f4eed6 !important;aspect-ratio:460/620 !important;overflow:hidden !important;justify-content:center !important;align-items:center !important;padding:1.6rem clamp(1.4rem,8%,2.2rem) 1.4rem !important}
 #notes .vtitle{text-shadow:none !important;margin-bottom:.6rem !important}
@@ -779,7 +788,7 @@
     <h2 class="vtitle">About the venue</h2>
     <div class="vbody">
       <p>Set amid volcanoes, rice fields and tropical rainforest, beside the Borobudur Temple.</p>
-      <p class="vgap">Expect a traditional ceremony and local cuisine, with one night celebrating Javanese culture and another international party with a touch of German tradition, over two days.</p>
+      <p class="vgap">Expect a traditional ceremony and local cuisine, with one night celebrating Javanese culture, followed by another night of international reception dinner with a touch of German tradition.</p>
     </div>
   </div>
 </div>
@@ -800,7 +809,7 @@
     <h2 class="vtitle">Contact Concierge</h2>
     <div class="vbody">
       <p>Our concierge will gladly assist with travel, accommodation, transfers, tourism bookings, or anything else you may need.</p>
-      <p class="vgap">Should you wish to stay at the wedding venue, rooms have been reserved for our guests. Please do not book directly — simply let us know, and we will secure your place.</p>
+      <p class="vgap">Should you wish to stay at the wedding venue, Plataran Borobudur, rooms and villas have been reserved for our guests. Please do not book directly — simply let us know, and we will secure your place.</p>
       <p class="vgap" id="conciergeDetails">Contact details coming soon.</p>
     </div>
   </div>

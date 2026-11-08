@@ -62,3 +62,10 @@ If someone replies twice, their row in **RSVPs** is updated (the *Replies* colum
 If a link id isn't on the guest list, the RSVP is still saved and the message says so.
 
 **If you edit Code.gs later:** Deploy → Manage deployments → ✏️ → Version: *New version* → Deploy (the URL stays the same).
+
+## Guest list from the "Wedding Guest List — Nina & Sevo" artifact (automatic)
+Nina and Sevo manage guests in that artifact; Claude copies the list into the **Guests** tab and copies
+RSVPs back into the artifact's RSVP column (every 4 hours, or on request: "sync guests").
+The Guests tab is therefore **managed from the artifact**: guests added there appear here, guests deleted
+there disappear here. The `message`, `ninaNote` and `sevoNote` columns are yours and are never overwritten.
+This needs the script property **SYNC_KEY**; Claude gives you its value (it is never stored in git).

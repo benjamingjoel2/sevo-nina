@@ -13,12 +13,14 @@
  *   SEVO_PHONE  e.g. +6281234567890      SEVO_KEY  (from CallMeBot)
  *   NINA_PHONE  e.g. +4412345678901      NINA_KEY  (from CallMeBot)
  *   NOTIFY_EMAILS  optional, e.g. sevo@example.com, nina@example.com  (email alerts too)
+ *   SYNC_KEY    secret shared with Claude's guest-list sync (copies the "Wedding Guest List" artifact
+ *               into the Guests tab and reads RSVPs back). Without it, the sync endpoints refuse everything.
  */
 
 const RSVP_SHEET = 'RSVPs';
 const GUEST_SHEET = 'Guests';
 const RSVP_HEADERS = ['Guest ID', 'Names', 'Attending', 'Guests', 'Message', 'First reply', 'Last updated', 'Replies', 'Known guest'];
-const GUEST_HEADERS = ['id', 'names', 'seats', 'international', 'side', 'message', 'ninaNote', 'sevoNote', 'link'];
+const GUEST_HEADERS = ['id', 'names', 'seats', 'international', 'side', 'group', 'message', 'ninaNote', 'sevoNote', 'link'];
 const GUEST_DOMAIN = 'ninasevo.co';   // each guest's link: https://<id>.ninasevo.co
 const RESERVED_IDS = ['www', 'mail', 'api', 'admin'];
 
@@ -86,7 +88,12 @@ function testWhatsApp() {
 }
 
 function doGet(e) {
-  const id = clean_(e && e.parameter && e.parameter.id).toLowerCase();
+  const prm = (e && e.parameter) || {};
+  if (prm.action === 'rsvps') {
+    if (!syncKeyOk_(prm.key)) return json_({ ok: false, error: 'forbidden' });
+    return json_({ ok: true, rsvps: listRsvps_() });
+  }
+  const id = clean_(prm.id).toLowerCase();
   if (!id) return json_({ ok: false, error: 'missing id' });
   const g = findGuest_(id);
   return json_(g ? { ok: true, guest: g } : { ok: false, error: 'not found' });
@@ -95,6 +102,10 @@ function doGet(e) {
 function doPost(e) {
   let body;
   try { body = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: 'bad request' }); }
+  if (body.action === 'syncGuests') {
+    if (!syncKeyOk_(body.key)) return json_({ ok: false, error: 'forbidden' });
+    return json_(syncGuests_(body.guests));
+  }
 
   const id = clean_(body.guestId).toLowerCase().slice(0, 80);
   if (!/^[a-z0-9-]+$/.test(id)) return json_({ ok: false, error: 'bad guest id' });
@@ -131,6 +142,78 @@ function doPost(e) {
   try { notify_(text); } catch (err) { console.error(err); } // the RSVP is already saved even if WhatsApp fails
 
   return json_({ ok: true });
+}
+
+// ---------- guest-list sync (from the "Wedding Guest List" artifact)
+
+function syncKeyOk_(key) {
+  const want = PropertiesService.getScriptProperties().getProperty('SYNC_KEY');
+  return !!want && want.length >= 20 && String(key || '') === want;
+}
+
+/** Makes the Guests tab match the list: adds new guests, updates changed ones, removes guests no longer on it.
+ *  Columns the list doesn't have (message, ninaNote, sevoNote) are left as they are. */
+function syncGuests_(guests) {
+  if (!Array.isArray(guests) || guests.length === 0 || guests.length > 2000) return { ok: false, error: 'empty or invalid list' };
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const sh = sheet_(GUEST_SHEET, GUEST_HEADERS);
+    let head = sh.getRange(1, 1, 1, Math.max(1, sh.getLastColumn())).getValues()[0].map(h => String(h).trim());
+    GUEST_HEADERS.forEach(h => { if (head.indexOf(h) === -1) { sh.getRange(1, head.length + 1).setValue(h).setFontWeight('bold'); head.push(h); } });
+    const col = h => head.indexOf(h);
+    const rows = sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, head.length).getValues() : [];
+    const byId = {};
+    rows.forEach((r, i) => { const id = String(r[col('id')]).trim().toLowerCase(); if (id) byId[id] = i; });
+
+    const incoming = {};
+    guests.forEach(g => {
+      const id = clean_(g && g.id).toLowerCase();
+      if (!/^[a-z0-9-]{1,63}$/.test(id) || !clean_(g.names)) return;
+      incoming[id] = g;
+    });
+    let added = 0, updated = 0, removed = 0;
+    const out = [];
+    rows.forEach(r => {
+      const id = String(r[col('id')]).trim().toLowerCase();
+      if (!id || !incoming[id]) { removed++; return; }
+      const g = incoming[id], before = JSON.stringify(r);
+      fillRow_(r, col, id, g);
+      if (JSON.stringify(r) !== before) updated++;
+      out.push(r);
+      delete incoming[id];
+    });
+    Object.keys(incoming).forEach(id => {
+      const r = head.map(() => '');
+      fillRow_(r, col, id, incoming[id]);
+      out.push(r); added++;
+    });
+    out.sort((a, b) => String(a[col('names')]).localeCompare(String(b[col('names')])));
+    if (sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, sh.getLastColumn()).clearContent();
+    if (out.length) sh.getRange(2, 1, out.length, head.length).setValues(out);
+    return { ok: true, total: out.length, added: added, updated: updated, removed: removed };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function fillRow_(r, col, id, g) {
+  r[col('id')] = id;
+  r[col('names')] = cell_(clean_(g.names).slice(0, 200));
+  r[col('seats')] = Math.max(1, Math.min(20, parseInt(g.seats, 10) || 1));
+  r[col('international')] = g.international === false ? 'no' : 'yes';
+  r[col('side')] = ['nina', 'sevo', 'both'].includes(g.side) ? g.side : '';
+  r[col('group')] = ['family', 'friends'].includes(g.group) ? g.group : '';
+  r[col('link')] = 'https://' + id + '.' + GUEST_DOMAIN;
+}
+
+function listRsvps_() {
+  const sh = SpreadsheetApp.getActive().getSheetByName(RSVP_SHEET);
+  if (!sh || sh.getLastRow() < 2) return [];
+  return sh.getRange(2, 1, sh.getLastRow() - 1, RSVP_HEADERS.length).getValues()
+    .filter(r => String(r[0]).trim())
+    .map(r => ({ id: String(r[0]).trim().toLowerCase(), attending: String(r[2]).trim().toLowerCase() === 'yes',
+                 guests: Number(r[3]) || 0, updated: r[6] ? new Date(r[6]).toISOString() : '' }));
 }
 
 // ---------- helpers

@@ -100,7 +100,7 @@
   .fold{height:1px;margin:1.6rem -2.4rem;border-top:1px dashed rgba(60,60,55,.35)}
   .modal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(20,28,18,.5);backdrop-filter:blur(3px);padding:1rem}
   .modal.open{display:flex}
-  .sheet{position:relative;background:#f4eed6;color:#2f3a2c;width:min(460px,90vw);aspect-ratio:460/620;overflow:hidden;padding:2.6rem 1.6rem 2.2rem;text-align:center;border-radius:2px;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4);display:flex;flex-direction:column;justify-content:center;align-items:center}
+  .sheet{position:relative;background:#f4eed6;color:#2f3a2c;width:min(460px,90vw);aspect-ratio:460/620;overflow:hidden;padding:2.6rem 1.6rem 2.2rem;text-align:center;border-radius:2px;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4);display:flex;flex-direction:column;justify-content:center;align-items:center;container-type:inline-size}
   .sheet h2{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:clamp(.68rem,2.2vw,.82rem);letter-spacing:.25em;text-transform:uppercase;color:#2f3a2c}
   .sheet h2+div,.sheet h2+.opts{margin-top:.5rem}
   .sheet .rsvp-img{display:block;width:70%;height:auto;margin:0 auto .8rem;border-radius:2px;opacity:.85}
@@ -540,25 +540,26 @@
   .modal#concierge{padding:1rem}
   .paper-overlay .paper.vcard,.modal .sheet.vcard{position:relative;width:min(460px,90vw) !important;max-width:none !important;aspect-ratio:460/620;margin:0 !important;overflow:hidden !important;transform:none !important;
     background:linear-gradient(to bottom,rgba(242,234,212,.97) 0%,rgba(242,234,212,.93) 58%,rgba(242,234,212,.55) 100%),url("fog_sketch.jpg") center bottom/cover no-repeat !important;
-    color:#2f4a2c !important;border-radius:2px;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4) !important;padding:3.2rem 1.8rem 2.2rem !important;text-align:center;display:flex;flex-direction:column;align-items:center}
+    color:#2f4a2c !important;border-radius:2px;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4) !important;padding:2.4rem .8rem 1.6rem !important;text-align:center;display:flex;flex-direction:column;align-items:center;
+    container-type:inline-size}
   .paper-overlay .paper.vcard{background-image:linear-gradient(to bottom,rgba(242,234,212,.97) 0%,rgba(242,234,212,.93) 58%,rgba(242,234,212,.55) 100%),url("fog_sketch.jpg") !important}
-  .vcard .vtitle{font-family:"Cardo","Times New Roman",Times,serif !important;font-weight:400;font-size:clamp(.95rem,3.4vw,1.2rem) !important;letter-spacing:.3em;text-transform:uppercase;color:#1c3322 !important;margin:0 0 1.4rem;line-height:1.35}
+  .vcard .vtitle{font-family:"Cardo","Times New Roman",Times,serif !important;font-weight:400;font-size:min(1.2rem,2.8cqw) !important;letter-spacing:.3em;text-transform:uppercase;color:#1c3322 !important;margin:0 0 1.4rem;line-height:1.35}
   .vcard .vtitle::after{content:"";display:block;width:56px;height:1px;margin:.8rem auto 0;background:#1c3322;opacity:.55}
   .vcard .paper-close{color:#1c3322}
-  .vcard .vbody p{margin:.25rem 0;font-size:clamp(.95rem,3.4vw,1.1rem);line-height:1.5;color:#2f4a2c;font-style:normal}
+  .vcard .vbody p{margin:.25rem 0;font-size:min(1.1rem,3.4cqw);line-height:1.5;color:#2f4a2c;font-style:normal}
   .vcard .vbody .vname{font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.35rem}
   .vcard .vbody .vgap{margin-top:1.3rem}
   .vcard .vbody .vsoon{margin-top:1.3rem;font-style:italic;opacity:.8}
-  .vcard .hand{width:100%;min-height:0 !important;font-size:clamp(1.05rem,3.9vw,1.3rem) !important;line-height:1.35 !important;color:#2f4a2c !important;text-align:center}
+  .vcard .hand{width:100%;min-height:0 !important;font-size:min(1.3rem,4cqw) !important;line-height:1.35 !important;color:#2f4a2c !important;text-align:center}
   .vcard .hand .sig{text-align:center !important;margin-top:.4rem}
   .vcard .fold{width:60%;margin:1rem auto !important;border-top:1px solid rgba(28,51,34,.3) !important}
-  .vcard.sheet p{font-size:clamp(.95rem,3.4vw,1.1rem);font-style:normal;color:#2f4a2c;margin:.3rem 0 .6rem;line-height:1.5}
+  .vcard.sheet p{font-size:min(1.1rem,3.4cqw);font-style:normal;color:#2f4a2c;margin:.3rem 0 .6rem;line-height:1.5}
   .vcard.sheet .close{color:#2f4a2c;margin-top:auto;padding-top:1rem;font-style:italic}
   /* routes card: already a vertical card design, sized to match */
   .paper-overlay#logistics .paper{container-type:inline-size;width:min(460px,90vw,calc(80vh * .705)) !important;max-width:none !important;transform:none !important;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4) !important}
   .paper-overlay#logistics .paper .touch{font-size:3cqw;left:10%;right:10%}
   /* each card: full-bleed sketch illustration like the first-page card; title on the cream wash, text on the dark fade */
-  .paper-overlay .paper.vcard,.modal .sheet.vcard{justify-content:flex-start;padding:2.6rem 1.6rem 2.2rem !important;isolation:isolate}
+  .paper-overlay .paper.vcard,.modal .sheet.vcard{justify-content:flex-start;padding:2.4rem .8rem 1.6rem !important;isolation:isolate}
   #venue .paper.vcard{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 47%,rgba(244,238,214,.55) 56%,rgba(244,238,214,0) 68%),url("pavilion_venue_sketch.jpg") center bottom/100% auto no-repeat,#f4eed6 !important}
   #notes .paper.vcard{background:linear-gradient(to bottom,rgba(238,228,203,.92) 0%,rgba(238,228,203,.6) 9%,rgba(10,20,12,.45) 19%,rgba(10,20,12,.8) 34%,rgba(10,20,12,.9) 100%),url("ceremony_sketch.jpg") 50% 40%/cover no-repeat,#1c2a1c !important}
   #concierge .sheet.vcard{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 47%,rgba(244,238,214,.55) 56%,rgba(244,238,214,0) 68%),url("joglo_sketch.jpg") center bottom/100% auto no-repeat,#f4eed6 !important}
@@ -568,7 +569,7 @@
   #modal .sheet #nameRow{width:100%;margin-bottom:.6rem}
   #modal .sheet input,#modal .sheet textarea{box-sizing:border-box;width:100%}
   @media(max-width:640px){#modal .sheet{padding-top:.6rem !important}#modal .sheet h2{margin:0}#modal .sheet .paper-close{top:.4rem !important}}
-  /* postcards: JS injects a <style> to scale them on mobile */
+  /* postcards use cqw units — text scales proportionally to card width on all screens */
   .vcard .vtitle{margin-bottom:0 !important;text-shadow:0 0 18px rgba(245,240,228,.65)}
   .vcard .vtitle + *{margin-top:auto !important}
   .vcard .vbody p,.vcard .hand,.vcard.sheet p{color:#f6f1e7 !important;text-shadow:0 1px 10px rgba(0,0,0,.45)}
@@ -576,21 +577,22 @@
   .vcard .fold{border-top-color:rgba(246,241,231,.4) !important}
   .vcard.sheet .close{color:#f6f1e7 !important;margin-top:1rem;padding-top:0}
   .vcard .vbody .vgap{margin-top:.9rem}
-  #notes .vcard .hand,#notes.paper-overlay .hand{font-size:clamp(.98rem,3.6vw,1.18rem) !important}
+  #notes .vcard .hand,#notes.paper-overlay .hand{font-size:min(1.18rem,3.8cqw) !important}
   /* horizontal photos: image fills only the lower half, text sits on the cream above */
   #venue .vbody p,#concierge .sheet p{color:#2f4a2c !important;text-shadow:none !important}
   #venue .vbody .vname{color:#1c3322 !important}
-  #venue .vtitle + .vbody,#concierge .vtitle + p{margin-top:1.3rem !important}
-  #venue .vbody p,#concierge .sheet p{font-size:clamp(.88rem,3.2vw,1.02rem) !important;line-height:1.45 !important}
-  #venue .vbody .vgap{margin-top:.7rem}
+  #venue .vtitle + .vbody,#concierge .vtitle + p{margin-top:.65rem !important}
+  #venue .vbody p,#concierge .sheet p{font-size:min(1.18rem,3.8cqw) !important;line-height:1.45 !important}
+  #venue .vbody,#concierge .vbody{width:100% !important;max-width:none !important;padding-left:0 !important;padding-right:0 !important}
+  #venue .vbody .vgap{margin-top:.35rem}
   #concierge .paper.vcard{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 0%,#f4eed6 47%,rgba(244,238,214,.55) 56%,rgba(244,238,214,0) 68%),url("concierge_sketch.jpg") center bottom/100% auto no-repeat,#f4eed6 !important}
-#concierge .vtitle{font-size:clamp(.72rem,2.5vw,.92rem) !important;letter-spacing:.28em;text-shadow:none !important}
-#concierge .vbody{padding-left:clamp(26px,9%,44px) !important;padding-right:clamp(26px,9%,44px) !important}
-#concierge .vbody p{color:#2f4a2c !important;font-size:clamp(.88rem,3.2vw,1.02rem) !important;text-shadow:none !important}
-#concierge .vtitle + .vbody{margin-top:1.3rem !important}
+#concierge .vtitle{font-size:min(1.1rem,3.2cqw) !important;letter-spacing:.28em;text-shadow:none !important}
+#concierge .vbody{padding-left:0 !important;padding-right:0 !important}
+#concierge .vbody p{color:#2f4a2c !important;font-size:min(1.18rem,3.8cqw) !important;text-shadow:none !important}
+#concierge .vtitle + .vbody{margin-top:.65rem !important}
   /* invite card text a little smaller */
   main.hero .hero-card-frame .card{zoom:.88}
-#venue .vtitle,#notes .vtitle,#logistics .vtitle{font-size:clamp(.68rem,2.2vw,.82rem) !important;letter-spacing:.25em}
+#venue .vtitle,#notes .vtitle,#logistics .vtitle{font-size:min(1.1rem,3.2cqw) !important;letter-spacing:.28em}
 #venue .paper.vcard{background-position:center,center calc(100% - 14px) !important;background-size:auto,104% auto !important}
 #venue .vbody{padding-left:clamp(26px,9%,44px) !important;padding-right:clamp(26px,9%,44px) !important;box-sizing:border-box}
 
@@ -1152,21 +1154,6 @@ document.getElementById("enter").addEventListener("click",()=>{
 });
 snd.addEventListener("click",e=>{ e.stopPropagation(); try{ if(Birds.on){Birds.stop();userMuted=true;} else {userMuted=false;Birds.start(); setTimeout(paint,120);} }catch(err){} paint(); });
 
-// Scale postcards on mobile: render at 460px, CSS-scale down like a screenshot
-(function(){
-  const id='postcard-scale';
-  function applyScale(){
-    const vw=window.innerWidth;
-    let el=document.getElementById(id);
-    if(vw>=500){if(el)el.remove();return;}
-    const s=((vw*0.9)/460).toFixed(4);
-    const css='.paper-overlay .paper.vcard,.modal .sheet,.modal .sheet.vcard{width:460px !important;transform:scale('+s+') !important;transform-origin:center center !important;}';
-    if(!el){el=document.createElement('style');el.id=id;document.head.appendChild(el);}
-    el.textContent=css;
-  }
-  applyScale();
-  window.addEventListener('resize',applyScale);
-})();
 </script>
 <script src="rsvp.js"></script>
 </body>

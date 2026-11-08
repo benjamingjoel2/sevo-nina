@@ -1,0 +1,60 @@
+/* Responsive layout fixes — kept in their own file so the artifact sync never overwrites them.
+   index.html links this file last in <head>, so these rules win. Design, colours and fonts unchanged. */
+
+:root{--bar-h:52px}
+
+/* ---------- page 2: header strip, card, bottom bar all fit in one screen ---------- */
+.hero{
+  min-height:100vh !important;min-height:100svh !important;height:auto !important;
+  display:flex !important;flex-direction:column !important;justify-content:center !important;align-items:center !important;
+  padding:100px 60px calc(var(--bar-h) + 24px) !important;box-sizing:border-box !important;
+}
+.hero-card-frame{
+  height:auto !important;flex:1 1 auto;min-height:0;
+  width:100% !important;max-width:1400px;
+}
+.actionbar{position:absolute !important;left:0;right:0;bottom:0;z-index:4 !important}
+
+/* top strip: logo left, "← Back" next to it, sound note left of the sound button */
+.hero-logo-wrap{top:1.2rem !important;left:1.2rem !important}
+.backbtn{left:clamp(140px,10vw,170px) !important;top:2.4rem !important;color:#f6f1e7 !important;text-shadow:0 1px 10px rgba(0,0,0,.6) !important}
+.hero-soundnote{right:4.9rem !important;top:1.2rem !important}
+
+/* ---------- tablets / small laptops ---------- */
+@media (max-width:900px){
+  .hero{padding:96px 28px calc(var(--bar-h) + 20px) !important}
+}
+
+/* ---------- phones ---------- */
+@media (max-width:640px){
+  :root{--bar-h:96px}
+
+  /* cover: logo centred on top, the sound note moves to the bottom so nothing overlaps */
+  .soundnote{top:auto !important;bottom:1.2rem !important;left:0 !important;right:0 !important;text-align:center !important;height:auto !important;line-height:1.4 !important}
+  .postcard{margin-top:3.5rem !important;margin-bottom:2.5rem !important}
+
+  /* page 2 top strip: Back left, logo centred, sound button right; no room for the note text */
+  .hero-logo-wrap{left:50% !important;transform:translateX(-50%);top:.9rem !important}
+  .hero-logo-wrap .gate-logo{width:44px !important}
+  .hero-soundnote{display:none !important}
+  .backbtn{left:1rem !important;top:1.75rem !important;font-size:.7rem !important;letter-spacing:.16em !important}
+  .sound{top:.9rem !important;right:.9rem !important;width:42px;height:42px}
+
+  .hero{padding:72px 14px calc(var(--bar-h) + 12px) !important;justify-content:flex-start !important}
+  .hero-card-frame{
+    width:100% !important;justify-content:center !important;
+    padding:2rem 1.2rem 9rem !important;
+    /* fog sits on the bottom edge of the card, no empty strip underneath */
+    background-position:center bottom !important;background-size:100% auto !important;
+  }
+  .card{max-width:100% !important}
+
+  /* compact bottom bar */
+  .actionbar{gap:.45rem !important;padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom)) !important}
+  .actionbar a{font-size:.72rem !important}
+}
+
+/* very short phones (iPhone SE etc.) */
+@media (max-width:640px) and (max-height:700px){
+  .hero-card-frame{padding:1.5rem 1rem 6rem !important;background-position:center bottom -110px !important}
+}

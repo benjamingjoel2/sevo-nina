@@ -428,7 +428,7 @@
     .card .wedof{font-size:clamp(.75rem,2.8vw,.92rem) !important}
     /* split venue into two lines on mobile */
     .place-sep{display:none}
-    .place-l2::before{content:"\\A";white-space:pre}
+    .place-l2::before{content:"\A";white-space:pre}
     .cta-stack{width:100% !important}
     .rsvp-mid{font-size:.74rem !important;padding:.6rem 1.2rem !important;width:100% !important}
     .invite-note{font-size:.65rem !important;margin-top:.2rem !important}
@@ -774,7 +774,7 @@ const logi=document.getElementById("logistics");
 document.getElementById("logiLink").addEventListener("click",e=>{e.preventDefault();logi.classList.add("open");logi.scrollTop=0;});
 document.getElementById("closeL").onclick=()=>logi.classList.remove("open");
 logi.addEventListener("click",e=>{if(e.target===logi)logi.classList.remove("open")});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){logi.classList.remove("open");notes.classList.remove("open");modal.classList.remove("open");}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){logi.classList.remove("open");notes.classList.remove("open");modal.classList.remove("open");cz.classList.remove("open");}});
 // ---- Place the background photo: Borobudur's stupa sits right on top of the first divider line
 (function(){
   const img=document.getElementById("mistImg"), hero=document.querySelector(".hero");

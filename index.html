@@ -13,13 +13,15 @@
   @font-face{font-family:"Cardo";font-style:normal;font-weight:700;src:url("Cardo-Bold.ttf") format("truetype")}
   :root{--cream:#f6f1e7;--ink:#2f3a2c;--sage:#7d8c6a;--gold:#b49a62}
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{font-family:"Jost",system-ui,sans-serif;font-weight:300;color:var(--cream);background:#1f271d;overflow-x:hidden}
+  html{height:100%;background:#1a2118}
+  body{height:100%;font-family:"Jost",system-ui,sans-serif;font-weight:300;color:var(--cream);background:#1f271d;overflow-x:hidden}
   /* Edge-to-edge immersive: extend into notch + home indicator areas */
   @supports(padding-top:env(safe-area-inset-top)){
     .hero,.gate,.sound-prompt{padding-top:env(safe-area-inset-top)}
-    .gate-photo,.gate-veil,.hero-photo,.hero-veil,.bg,.sound-prompt-bg{top:calc(-1 * env(safe-area-inset-top))}
-    nav.actionbar{padding-bottom:calc(1.05rem + env(safe-area-inset-bottom)) !important}
+    .gate-photo,.gate-veil,.hero-photo,.hero-veil,.bg,.sound-prompt-bg{top:calc(-1 * env(safe-area-inset-top));bottom:calc(-1 * env(safe-area-inset-bottom))}
+    .gate{padding-bottom:env(safe-area-inset-bottom)}
+    .sound-prompt{padding-bottom:env(safe-area-inset-bottom)}
+    nav.actionbar,.actionbar{padding-bottom:calc(.7rem + env(safe-area-inset-bottom)) !important}
   }
   .hero{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;justify-content:center;text-align:center;padding:6rem 1.5rem 7rem;overflow:hidden}
   .bg{position:absolute;inset:-4%;background:url("valley.jpg") center 60%/cover no-repeat;animation:drift 40s ease-in-out infinite alternate;filter:saturate(.9)}
@@ -96,24 +98,24 @@
   .hand p{margin:0}
   .hand .sig{text-align:right;margin-top:.6rem;font-weight:500}
   .fold{height:1px;margin:1.6rem -2.4rem;border-top:1px dashed rgba(60,60,55,.35)}
-  .modal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(20,28,18,.55);padding:1rem;backdrop-filter:blur(2px)}
+  .modal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:rgba(20,28,18,.5);backdrop-filter:blur(3px);padding:1rem}
   .modal.open{display:flex}
-  .sheet{background:#f4eed6;color:#2f3a2c;max-width:380px;width:100%;padding:2.2rem 1.8rem 1.8rem;text-align:center;border-radius:3px;box-shadow:0 8px 40px rgba(0,0,0,.3);aspect-ratio:460/620;display:flex;flex-direction:column;justify-content:center;overflow-y:auto}
+  .sheet{position:relative;background:#f4eed6;color:#2f3a2c;width:min(460px,90vw);aspect-ratio:460/620;overflow:hidden;padding:2.6rem 1.6rem 2.2rem;text-align:center;border-radius:2px;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4);display:flex;flex-direction:column;justify-content:center;align-items:center}
   .sheet h2{font-family:"Cormorant Garamond",serif;font-weight:300;font-size:clamp(.68rem,2.2vw,.82rem);letter-spacing:.25em;text-transform:uppercase;color:#2f3a2c}
-  .sheet #rsvpFor{margin:.6rem 0 1.2rem;font-family:"Cardo","Times New Roman",Times,serif;font-style:italic;font-size:1.1rem;letter-spacing:.03em;color:#4a5442}
-  .opts{display:flex;gap:.7rem;justify-content:center;margin-bottom:1.2rem;flex-wrap:wrap}
-  .opts button,.sheet .send{font-family:"Cormorant Garamond",serif;font-size:.95rem;padding:.65rem 1.1rem;border:1px solid #7d8c6a;background:transparent;color:#2f3a2c;cursor:pointer;letter-spacing:.08em;transition:all .25s}
+  .sheet #rsvpFor{margin:.4rem 0 .8rem;font-family:"Cardo","Times New Roman",Times,serif;font-style:italic;font-size:1rem;letter-spacing:.03em;color:#4a5442}
+  .sheet .rsvp-img{display:block;width:70%;height:auto;margin:0 auto .8rem;border-radius:2px;opacity:.85}
+  .opts{display:flex;gap:.6rem;justify-content:center;margin-bottom:.8rem;flex-wrap:wrap}
+  .opts button,.sheet .send{font-family:"Cormorant Garamond",serif;font-size:.85rem;padding:.5rem .9rem;border:1px solid #7d8c6a;background:transparent;color:#2f3a2c;cursor:pointer;letter-spacing:.08em;transition:all .25s}
   .opts button:hover{background:rgba(125,140,106,.12)}
   .opts button.on{background:#7d8c6a;color:#f4eed6}
-  .sheet label{display:block;text-align:left;font-family:"Cormorant Garamond",serif;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;margin:.8rem 0 .3rem;color:#5a6650}
-  .sheet input,.sheet textarea{width:100%;font-family:"Cardo","Times New Roman",Times,serif;font-size:1rem;padding:.55rem;border:1px solid #c4bfa6;background:rgba(255,255,255,.35);color:#2f3a2c;border-radius:2px}
+  .sheet label{display:block;text-align:left;font-family:"Cormorant Garamond",serif;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;margin:.5rem 0 .15rem;color:#5a6650;width:100%}
+  .sheet input,.sheet textarea{width:100%;font-family:"Cardo","Times New Roman",Times,serif;font-size:.9rem;padding:.4rem;border:1px solid #c4bfa6;background:rgba(255,255,255,.35);color:#2f3a2c;border-radius:2px}
   .sheet input:focus,.sheet textarea:focus{outline:none;border-color:#7d8c6a}
-  .sheet .send{margin-top:1.2rem;background:#7d8c6a;color:#f4eed6;letter-spacing:.22em;text-transform:uppercase;font-size:.8rem;padding:.8rem 1.8rem;border-color:#7d8c6a;transition:all .25s}
+  .sheet .send{margin-top:.7rem;background:#7d8c6a;color:#f4eed6;letter-spacing:.22em;text-transform:uppercase;font-size:.74rem;padding:.55rem 1.4rem;border-color:#7d8c6a;transition:all .25s}
   .sheet .send:hover{background:#5a6650;border-color:#5a6650}
-  .sheet .close{display:block;margin:.8rem auto 0;background:none;border:0;font-family:"Cormorant Garamond",serif;font-style:italic;color:#8a8a7a;cursor:pointer;font-size:.85rem;letter-spacing:.05em}
-  .sheet .close:hover{color:#2f3a2c}
-  .status{min-height:1.3em;margin-top:.7rem;font-family:"Cardo","Times New Roman",Times,serif;font-style:italic;font-size:.9rem;color:#5a6650}
-  @media(max-width:640px){.sheet{max-width:92vw;aspect-ratio:auto;max-height:85vh;padding:1.8rem 1.4rem 1.4rem}}
+  .sheet .paper-close{position:absolute;top:.6rem;right:.7rem;background:none;border:0;font-size:1.3rem;color:#8a8a7a;cursor:pointer;line-height:1;z-index:1}
+  .sheet .close{display:none}
+  .status{min-height:1em;margin-top:.4rem;font-family:"Cardo","Times New Roman",Times,serif;font-style:italic;font-size:.78rem;color:#5a6650}
   .sound{position:fixed;right:1.2rem;top:1.2rem;z-index:15;width:46px;height:46px;border-radius:50%;border:1px solid rgba(246,241,231,.6);background:rgba(20,28,18,.35);backdrop-filter:blur(6px);color:var(--cream);cursor:pointer;display:flex;align-items:center;justify-content:center}
   .sound svg{width:20px;height:20px}
   footer{position:absolute;bottom:1.4rem;left:0;right:0;text-align:center;font-size:.85rem;letter-spacing:.25em;text-transform:uppercase;color:#d8cdb4;opacity:.85}
@@ -250,16 +252,22 @@
   .greeting .dear{display:none !important}
   /* bottom action bar */
   .links{display:none !important}
-  .actionbar{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;justify-content:center;gap:clamp(1rem,5vw,4.5rem);flex-wrap:wrap;
-    background:rgba(10,12,10,.88);backdrop-filter:blur(6px);padding:1.05rem 1.2rem calc(1.05rem + env(safe-area-inset-bottom))}
-  .actionbar a{color:#f3ede0;text-decoration:none;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;display:inline-flex;align-items:center;gap:.6rem;opacity:.9;transition:opacity .2s}
-  .actionbar a:hover{opacity:1;text-decoration:underline;text-underline-offset:5px}
-  .actionbar .ico{width:16px;height:16px;flex:none}
-  .actionbar a.logi{margin:0 !important}
+  .card-links{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;margin-top:.8rem;position:relative;z-index:5;width:100%;max-width:420px;margin-left:auto;margin-right:auto;justify-items:center;pointer-events:auto}
+  @media (max-width:640px){.card-links{grid-template-columns:1fr;max-width:240px}}
+  .card-links a{color:#fff;text-decoration:none;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.5rem 1rem;background:#1f4a2c;border-radius:2px;transition:background .25s;width:100%;white-space:nowrap;-webkit-tap-highlight-color:rgba(255,255,255,.15);touch-action:manipulation;cursor:pointer}
+  .card-links a:hover{background:#2c6a3f;text-decoration:none}
+  .card-links .ico{width:13px;height:13px;flex:none;color:#fff}
+  .card-links a.logi{margin:0 !important}
+  body:not(.opened) .card-links{opacity:0}
+  body.opened .card-links{animation:openIn 1s 1.3s ease both}
+  .actionbar{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;flex-direction:column;align-items:center;
+    background:rgba(10,12,10,.88);backdrop-filter:blur(6px);padding:.7rem 1.2rem calc(.7rem + env(safe-area-inset-bottom))}
+  .bar-rsvp{color:#f3ede0 !important;text-decoration:none;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;opacity:.9;transition:opacity .2s}
+  .bar-rsvp:hover{opacity:1}
   body:not(.opened) .actionbar{opacity:0}
   body.opened .actionbar{animation:openIn 1s 1.05s ease both}
-  .hero{padding-bottom:6rem !important}
-  @media (max-width:640px){.actionbar{flex-direction:column;align-items:center;gap:.7rem}.actionbar a{font-size:.74rem}.hero{padding-bottom:9rem !important}}
+  .hero{padding-bottom:4rem !important}
+  @media (max-width:640px){.card-links{gap:.25rem}.card-links a{font-size:.62rem;padding:.35rem .7rem;min-width:200px}}
   .soundnote{position:absolute;bottom:.7rem;left:0;right:0;text-align:center;z-index:1;font-style:italic;color:#e3dac6 !important;font-size:.95rem;letter-spacing:.04em}
   .gate.opening .soundnote{opacity:0;transition:opacity .3s}
   .postcard .gate-std{font-size:clamp(1.3rem,4.2vw,1.9rem);letter-spacing:.24em;line-height:1.35}
@@ -440,6 +448,7 @@
   @media (max-width:640px){.venue img{width:min(130px,34vw) !important}}
   .penjor.l,.penjor.r{bottom:35vh !important}
   @media (max-width:640px){.penjor.l,.penjor.r{bottom:34vh !important}}
+  @media (min-width:641px) and (max-width:1024px){.penjor{height:26vh !important}.penjor.l,.penjor.r{bottom:22vh !important}.penjor.l{left:-6vw !important}.penjor.r{right:-6vw !important}}
   /* ---- mobile layout ---- */
   @media (max-width:640px){
     .hero{padding:16px !important}
@@ -492,12 +501,13 @@
   main.hero .hero-card-frame .penjor.l{left:-12% !important;right:auto !important}
   main.hero .hero-card-frame .penjor.r{right:-12% !important;left:auto !important}
   .hero-card-frame .card,.hero-card-frame .cta-stack{position:relative;z-index:1}
+  @media (min-width:641px) and (max-width:1024px){main.hero .hero-card-frame .penjor{height:50% !important;bottom:18% !important}main.hero .hero-card-frame .penjor.l{left:-16% !important}main.hero .hero-card-frame .penjor.r{right:-16% !important}}
   @media (max-width:640px){main.hero .hero-card-frame .penjor{height:50% !important;bottom:18% !important}main.hero .hero-card-frame .penjor.l{left:-16% !important}main.hero .hero-card-frame .penjor.r{right:-16% !important}}
   /* when the sound note wraps (phones), "sound of Java" takes the second line */
   @media (max-width:640px){.sn2{display:block}}
   /* ── ONE FRAME, NO SCROLL: final word on sizing ── */
-  html{height:100%;overflow:hidden !important}
-  body{position:fixed !important;inset:0 !important;height:100% !important;overflow:hidden !important}
+  html{height:100%;overflow:hidden !important;background:#1a2118 !important}
+  body{position:fixed !important;inset:0 !important;height:100% !important;overflow:hidden !important;background:#1a2118 !important}
   main.hero{height:100% !important;min-height:0 !important;padding:clamp(70px,10vh,110px) clamp(70px,9vw,140px) !important;overflow:hidden !important}
   main.hero .hero-card-frame{height:100% !important;min-height:0 !important}
   /* smaller logo on both pages */
@@ -526,9 +536,9 @@
     main.hero{padding-bottom:142px !important}
   }
   /* ── expansion panels: vertical cards, same size and style as the first-page card ── */
-  .paper-overlay{display:flex !important;align-items:center;justify-content:center;padding:1rem !important;overflow:hidden !important}
+  .paper-overlay{display:flex !important;align-items:center;justify-content:center;padding:1rem !important;overflow:auto !important}
   .modal#concierge{padding:1rem}
-  .paper-overlay .paper.vcard,.modal .sheet.vcard{position:relative;width:min(460px,90vw) !important;max-width:none !important;aspect-ratio:460/620;max-height:80vh;margin:0 !important;overflow-y:auto;transform:none !important;
+  .paper-overlay .paper.vcard,.modal .sheet.vcard{position:relative;width:min(460px,90vw) !important;max-width:none !important;aspect-ratio:460/620;margin:0 !important;overflow:hidden !important;transform:none !important;
     background:linear-gradient(to bottom,rgba(242,234,212,.97) 0%,rgba(242,234,212,.93) 58%,rgba(242,234,212,.55) 100%),url("fog_sketch.jpg") center bottom/cover no-repeat !important;
     color:#2f4a2c !important;border-radius:2px;box-shadow:0 32px 100px rgba(0,0,0,.7),0 4px 16px rgba(0,0,0,.4) !important;padding:3.2rem 1.8rem 2.2rem !important;text-align:center;display:flex;flex-direction:column;align-items:center}
   .paper-overlay .paper.vcard{background-image:linear-gradient(to bottom,rgba(242,234,212,.97) 0%,rgba(242,234,212,.93) 58%,rgba(242,234,212,.55) 100%),url("fog_sketch.jpg") !important}
@@ -552,6 +562,10 @@
   #venue .paper.vcard{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 47%,rgba(244,238,214,.55) 56%,rgba(244,238,214,0) 68%),url("pavilion_venue_sketch.jpg") center bottom/100% auto no-repeat,#f4eed6 !important}
   #notes .paper.vcard{background:linear-gradient(to bottom,rgba(238,228,203,.92) 0%,rgba(238,228,203,.6) 9%,rgba(10,20,12,.45) 19%,rgba(10,20,12,.8) 34%,rgba(10,20,12,.9) 100%),url("ceremony_sketch.jpg") 50% 40%/cover no-repeat,#1c2a1c !important}
   #concierge .sheet.vcard{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 47%,rgba(244,238,214,.55) 56%,rgba(244,238,214,0) 68%),url("joglo_sketch.jpg") center bottom/100% auto no-repeat,#f4eed6 !important}
+  #modal .sheet{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 60%,rgba(244,238,214,.55) 70%,rgba(244,238,214,0) 82%),url("rsvp-feast.png") center bottom/auto 40% no-repeat,#f4eed6 !important;justify-content:flex-start !important}
+  #modal .sheet .opts{width:100%}
+  #modal .sheet .opts button{flex:1}
+  #modal .sheet input,#modal .sheet textarea{box-sizing:border-box}
   .vcard .vtitle{margin-bottom:0 !important;text-shadow:0 0 18px rgba(245,240,228,.65)}
   .vcard .vtitle + *{margin-top:auto !important}
   .vcard .vbody p,.vcard .hand,.vcard.sheet p{color:#f6f1e7 !important;text-shadow:0 1px 10px rgba(0,0,0,.45)}
@@ -577,22 +591,17 @@
 #venue .paper.vcard{background-position:center,center calc(100% - 14px) !important;background-size:auto,104% auto !important}
 #venue .vbody{padding-left:clamp(26px,9%,44px) !important;padding-right:clamp(26px,9%,44px) !important;box-sizing:border-box}
 
-#notes .paper.vcard{background:radial-gradient(ellipse at 30% 20%,rgba(255,252,240,.55),rgba(255,252,240,0) 60%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .38  0 0 0 0 .22  0 0 0 .13 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),#f4eed6 !important;aspect-ratio:auto !important;height:auto !important;max-height:92vh !important;overflow-y:auto !important;justify-content:flex-start !important;padding:2.4rem clamp(1.4rem,7%,2.2rem) 2rem !important}
-#notes .vtitle{text-shadow:none !important;margin-bottom:1.1rem !important}
+#notes .paper.vcard{background:radial-gradient(ellipse at 30% 20%,rgba(255,252,240,.55),rgba(255,252,240,0) 60%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .38  0 0 0 0 .22  0 0 0 .13 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),#f4eed6 !important;aspect-ratio:460/620 !important;overflow:hidden !important;justify-content:center !important;align-items:center !important;padding:1.6rem clamp(1.4rem,8%,2.2rem) 1.4rem !important}
+#notes .vtitle{text-shadow:none !important;margin-bottom:.6rem !important}
 #notes .vtitle + *{margin-top:0 !important}
-#notes .inknote{display:block;width:100%;height:auto;margin:0 auto}
-#notes .fold{width:46% !important;margin:1.1rem auto !important;border-top:1px solid rgba(28,51,34,.28) !important}
+#notes .inknote{display:block;width:78%;height:auto;margin:0 auto}
+#notes .fold{width:36% !important;margin:.6rem auto !important;border-top:1px solid rgba(28,51,34,.28) !important}
+/* notes card: same on all screens */
 
-@media (max-width:600px){
-  #venue .vbody{padding-left:clamp(14px,5%,22px) !important;padding-right:clamp(14px,5%,22px) !important}
-  #venue .vbody p{font-size:clamp(.78rem,2.8vw,.88rem) !important;line-height:1.4 !important}
-  #venue .paper.vcard{background-size:auto,88% auto !important;background-position:center,center calc(100% - 8px) !important}
-  #concierge .paper.vcard{background:linear-gradient(to bottom,#f4eed6 0%,#f4eed6 55%,rgba(244,238,214,.75) 62%,rgba(244,238,214,0) 78%),url("concierge_sketch.jpg") center bottom/100% auto no-repeat,#f4eed6 !important}
-  #concierge .vbody{padding-left:clamp(14px,5%,22px) !important;padding-right:clamp(14px,5%,22px) !important}
-  #concierge .vbody p{font-size:clamp(.78rem,2.8vw,.88rem) !important;line-height:1.4 !important}
-}
+/* postcards render identically on all screens — no mobile text shrinking */
 
-#logistics .paper.vcard.logi-card{aspect-ratio:460/620 !important;max-height:80vh !important;overflow:hidden !important;justify-content:flex-start !important;padding:1.6rem clamp(1rem,5%,1.6rem) .8rem !important;background:#f4eed6 !important}
+#logistics .paper.vcard.logi-card{aspect-ratio:460/620 !important;overflow:hidden !important;justify-content:flex-start !important;padding:3rem clamp(1rem,5%,1.6rem) .8rem !important;background:#f4eed6 !important}
+#logistics .vtitle{margin-bottom:1.2rem !important}
 .route-block{margin-bottom:.9rem}
 .route-map{display:block;width:74%;height:auto;border-radius:3px;margin:0 auto}
 .route-cap{font-size:clamp(.68rem,2.2vw,.82rem) !important;color:#2f4a2c !important;text-align:center;margin:.15rem 0 0;font-style:italic;line-height:1.3}
@@ -620,7 +629,7 @@
   <div class="sound-prompt-content">
     <div class="sound-prompt-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg></div>
     <p class="sound-prompt-text">Turn on the <em>sound of Java</em><br>for the best experience</p>
-    <button class="sound-prompt-btn" id="soundYes">Turn on sound</button>
+    <button class="sound-prompt-btn" id="soundYes">Turn on & enter</button>
     <button class="sound-prompt-skip" id="soundSkip">continue without sound</button>
   </div>
 </div>
@@ -715,16 +724,16 @@
       <div class="rule">✦</div>
       <p class="note" id="cdCard"></p>
     </div>
-    <div class="cta-stack">
-      <button class="rsvp rsvp-mid" id="rsvpBtn"><span class="rsvp-t">RSVP</span><span class="invite-note">Formal invitation to follow.</span></button>
-      <span class="away-below" id="cd" style="display:none"></span>
+    <div class="card-links">
+      <a href="#" id="noteLink"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3.5H5.5a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V13"/><path d="M7.5 8.5h4M7.5 12h3M7.5 15.5h5"/><path d="M19.2 3.8l1.6 1.6L14.6 11.6l-2.3.7.7-2.3z"/></svg>Our personal note</a>
+      <a href="#" id="venueLink"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-6"/><path d="M12 3.5c-3.4 2.4-5.4 5-5.4 7.4 0 2.2 1.9 3.6 5.4 3.6s5.4-1.4 5.4-3.6c0-2.4-2-5-5.4-7.4z"/><path d="M12 9.5v3.2M9.6 11.6L12 13.6l2.4-2"/><path d="M8.5 21h7"/></svg>About the venue</a>
+      <a href="logistics.html" id="logiLink" class="logi"><span id="logiCorner" style="display:contents"><svg class="ico" viewBox="-12 -12 24 24" aria-hidden="true"><path fill="currentColor" d="M10 0 L8 1 L2 1.2 L-2 6.5 L-3.6 6.5 L-1.2 1.2 L-6 1 L-8 3.4 L-9.2 3.4 L-8 0 L-9.2 -3.4 L-8 -3.4 L-6 -1 L-1.2 -1.2 L-3.6 -6.5 L-2 -6.5 L2 -1.2 L8 -1 Z" transform="rotate(-30)"/></svg>Logistical info</span></a>
+      <a href="#" id="conciergeLink"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5h8l1 5.5h-9z"/><path d="M2.5 8.5c1.5-2 8.5-2 10 0"/><circle cx="6" cy="17" r="2.6"/><circle cx="12" cy="17.6" r="2"/><path d="M12.8 14.2l7.7.8"/><path d="M20.5 15l1-4"/></svg>Contact concierge</a>
     </div>
+    <span class="away-below" id="cd" style="display:none"></span>
   </div>
   <nav class="actionbar">
-    <a href="#" id="noteLink"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3.5H5.5a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1V13"/><path d="M7.5 8.5h4M7.5 12h3M7.5 15.5h5"/><path d="M19.2 3.8l1.6 1.6L14.6 11.6l-2.3.7.7-2.3z"/></svg>Our personal note</a>
-    <a href="#" id="venueLink"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-6"/><path d="M12 3.5c-3.4 2.4-5.4 5-5.4 7.4 0 2.2 1.9 3.6 5.4 3.6s5.4-1.4 5.4-3.6c0-2.4-2-5-5.4-7.4z"/><path d="M12 9.5v3.2M9.6 11.6L12 13.6l2.4-2"/><path d="M8.5 21h7"/></svg>About the venue</a>
-    <a href="logistics.html" id="logiLink" class="logi"><span id="logiCorner" style="display:contents"><svg class="ico" viewBox="-12 -12 24 24" aria-hidden="true"><path fill="currentColor" d="M10 0 L8 1 L2 1.2 L-2 6.5 L-3.6 6.5 L-1.2 1.2 L-6 1 L-8 3.4 L-9.2 3.4 L-8 0 L-9.2 -3.4 L-8 -3.4 L-6 -1 L-1.2 -1.2 L-3.6 -6.5 L-2 -6.5 L2 -1.2 L8 -1 Z" transform="rotate(-30)"/></svg>Logistical info</span></a>
-    <a href="#" id="conciergeLink"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5h8l1 5.5h-9z"/><path d="M2.5 8.5c1.5-2 8.5-2 10 0"/><circle cx="6" cy="17" r="2.6"/><circle cx="12" cy="17.6" r="2"/><path d="M12.8 14.2l7.7.8"/><path d="M20.5 15l1-4"/></svg>Contact concierge</a>
+    <a href="#" id="rsvpBtn" class="bar-rsvp">RSVP here &nbsp;→&nbsp; Formal invitation to follow.</a>
   </nav>
   <footer>Borobudur · Central Java</footer>
 </main>
@@ -778,9 +787,14 @@
 </div>
 
 <div class="modal" id="modal" role="dialog" aria-modal="true">
-  <form class="sheet" id="rsvpForm">
+  <form class="sheet" id="rsvpForm" style="position:relative">
+    <button class="paper-close" type="button" id="closeM2" style="position:absolute;top:.6rem;right:.7rem;background:none;border:0;font-size:1.3rem;color:#8a8a7a;cursor:pointer;line-height:1">&times;</button>
     <h2>RSVP</h2>
     <p id="rsvpFor"></p>
+    <div id="nameRow" style="display:none">
+      <label for="guestName">Your name</label>
+      <input id="guestName" type="text" placeholder="e.g. Maria & João">
+    </div>
     <div class="opts" id="opts">
       <button type="button" data-v="yes">Attending</button>
       <button type="button" data-v="no">Declining</button>
@@ -788,7 +802,7 @@
     <label for="count">Number of guests</label>
     <input id="count" type="number" min="0" max="10" value="2">
     <label for="msg">Additional notes (optional)</label>
-    <textarea id="msg" rows="3"></textarea>
+    <textarea id="msg" rows="2"></textarea>
     <button class="send" type="submit">Send</button>
     <div class="status" id="status"></div>
     <button class="close" type="button" id="closeM">close</button>
@@ -941,20 +955,33 @@ const Birds=(function(){
 })();
 
 // ---- Guest personalisation ----
-// Each invitation link ends in #guest-id, e.g. ...#lisa-calvin
-const DEFAULT_ID="lisa-calvin";
-const guestId=(location.hash.replace("#","")||DEFAULT_ID).toLowerCase();
-function nameFromId(id){ // fallback when the guest list can't be read
+// Each invitation link ends in #guest-id, e.g. ...#sonja-gunther
+const rawHash=location.hash.replace("#","").toLowerCase();
+const isGeneric=!rawHash; // no hash = generic homepage
+const guestId=rawHash||"generic";
+let GUESTS={};
+function nameFromId(id){
   const parts=id.split("-").filter(Boolean).map(w=>w[0].toUpperCase()+w.slice(1));
   return parts.length>1? parts.slice(0,-1).join(", ")+" & "+parts.at(-1) : (parts[0]||"Friend");
 }
-let guest={id:guestId,names:nameFromId(guestId)};
+let guest=isGeneric
+  ? {id:"generic",names:"Family & Friends",generic:true}
+  : {id:guestId,names:nameFromId(guestId)};
+// Load guest list from separate file
+(async()=>{
+  try{
+    const r=await fetch("guests.json");
+    if(r.ok){ GUESTS=await r.json(); if(!isGeneric && GUESTS[guestId]){guest={id:guestId,...GUESTS[guestId]};showGuest();}}
+  }catch(e){}
+})();
 function showGuest(){
   document.getElementById("dear").textContent="Dear "+guest.names;
-  document.getElementById("gateTo").textContent="For "+guest.names;
-  document.getElementById("rsvpFor").textContent="for "+guest.names;
+  document.getElementById("gateTo").textContent=isGeneric ? "Save the Date" : "For "+guest.names;
+  document.getElementById("rsvpFor").textContent=isGeneric ? "Dear Family & Friends" : "for "+guest.names;
+  // Show name field in RSVP only for generic visitors
+  const nameRow=document.getElementById("nameRow");
+  if(nameRow) nameRow.style.display=isGeneric?"block":"none";
   if(guest.seats) document.getElementById("count").value=guest.seats;
-  // Local (Indonesian) guests don't need the travel logistics
   if(guest.ninaNote) document.getElementById("ninaNote").textContent=guest.ninaNote;
   if(guest.sevoNote) document.getElementById("sevoNote").textContent=guest.sevoNote;
   const pm=document.getElementById("personal");
@@ -962,9 +989,11 @@ function showGuest(){
   document.getElementById("logiLink").style.display = guest.international===false ? "none" : "";
 }
 showGuest();
+// Try artifact db for live data overlay + RSVP storage
 let db=null;
 (async()=>{
   try{
+    if(typeof claude==="undefined"||!claude.use) return;
     db=await claude.use("db");
     if(!db) return;
     const snap=await db.doc("invitees/"+guestId).get();
@@ -1016,8 +1045,9 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){logi.classList.remo
 // ---- RSVP ----
 const modal=document.getElementById("modal"), status=document.getElementById("status");
 let answer=null;
-document.getElementById("rsvpBtn").onclick=()=>{modal.classList.add("open");status.textContent="";};
+document.getElementById("rsvpBtn").addEventListener("click",e=>{e.preventDefault();modal.classList.add("open");status.textContent="";});
 document.getElementById("closeM").onclick=()=>modal.classList.remove("open");
+document.getElementById("closeM2").onclick=()=>modal.classList.remove("open");
 modal.addEventListener("click",e=>{if(e.target===modal)modal.classList.remove("open")});
 document.querySelectorAll("#opts button").forEach(b=>b.onclick=()=>{
   answer=b.dataset.v;
@@ -1027,13 +1057,17 @@ document.querySelectorAll("#opts button").forEach(b=>b.onclick=()=>{
 document.getElementById("rsvpForm").addEventListener("submit",async e=>{
   e.preventDefault();
   if(!answer){status.textContent="Please choose attending or declining.";return;}
+  const rsvpName=isGeneric?(document.getElementById("guestName").value.trim()||""):guest.names;
+  if(isGeneric && !rsvpName){status.textContent="Please enter your name.";return;}
   if(!db){status.textContent="Sorry — RSVPs can't be saved from this view yet.";return;}
+  const rsvpId=isGeneric?rsvpName.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""):guestId;
   status.textContent="Sending…";
   try{
-    await db.doc("rsvps/"+guestId).set({
-      guestId, names:guest.names, attending:answer==="yes",
+    await db.doc("rsvps/"+rsvpId).set({
+      guestId:rsvpId, names:rsvpName, attending:answer==="yes",
       guests:Number(document.getElementById("count").value)||0,
       message:document.getElementById("msg").value.trim(),
+      via:isGeneric?"homepage":"invite-link",
       at:new Date().toISOString()
     });
     status.textContent= answer==="yes" ? "Thank you for letting us know — more details to follow." : "Thank you for letting us know. We hope to see you on another occasion.";

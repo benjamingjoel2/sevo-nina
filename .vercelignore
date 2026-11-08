@@ -1,0 +1,4 @@
+tools/
+google-apps-script/
+*.md
+.artifact-sync

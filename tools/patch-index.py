@@ -6,6 +6,7 @@ r"""Re-apply this build's changes to index.html after an artifact sync. Safe to 
   3. rsvp.js before </body> (RSVPs + guest list from the Google Sheet)
   4. images inside popups / hidden layers load only when needed (loading="lazy")
   5. old mobile venue line-break typo  content:"\\A"  ->  content:"\A"
+  7. page title + social share image (share.jpg)
   6. favicon / home-screen icon (favicon.ico, favicon-32.png, apple-touch-icon.png)
 """
 import os, re, sys
@@ -40,6 +41,24 @@ ICONS = ('<link rel="icon" href="favicon.ico" sizes="any">\n'
 if 'href="favicon.ico"' not in s:
     s = re.sub(r'<link[^>]*rel="(?:shortcut )?icon"[^>]*>\s*', '', s)
     s = s.replace("</head>", ICONS + "</head>", 1)
+
+# 7 page title + social share preview (WhatsApp, iMessage, Facebook, ...)
+TITLE = "The Wedding of Nina &amp; Sevo - Save the Date"
+s = re.sub(r"<title>.*?</title>", "<title>" + TITLE + "</title>", s, count=1, flags=re.S)
+SHARE = ('<meta name="description" content="30 – 31 July 2027 · Plataran Borobudur, Yogyakarta, Indonesia">\n'
+         '<meta property="og:type" content="website">\n'
+         '<meta property="og:site_name" content="Nina &amp; Sevo">\n'
+         '<meta property="og:title" content="' + TITLE + '">\n'
+         '<meta property="og:description" content="30 – 31 July 2027 · Plataran Borobudur, Yogyakarta, Indonesia">\n'
+         '<meta property="og:image" content="https://www.ninasevo.co/share.jpg">\n'
+         '<meta property="og:image:width" content="1200">\n'
+         '<meta property="og:image:height" content="630">\n'
+         '<meta property="og:image:alt" content="Pencil drawing of a terrace overlooking the misty jungle and mountains near Borobudur">\n'
+         '<meta name="twitter:card" content="summary_large_image">\n'
+         '<meta name="twitter:title" content="' + TITLE + '">\n'
+         '<meta name="twitter:image" content="https://www.ninasevo.co/share.jpg">\n')
+if 'property="og:image"' not in s:
+    s = s.replace("</head>", SHARE + "</head>", 1)
 
 # sanity checks the sync relies on
 for needle in ("let db", "let guest", "const guestId", "function nameFromId", "function showGuest", 'db.doc("rsvps/"'):

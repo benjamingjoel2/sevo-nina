@@ -16,9 +16,10 @@ s = orig = open(p, encoding="utf-8").read()
 notes = []
 
 # 1
-esc = 'modal.classList.remove("open");}});'
-if esc in s and 'cz.classList.remove("open");}});' not in s:
-    s = s.replace(esc, 'modal.classList.remove("open");cz.classList.remove("open");}});')
+ESC_HEAD = 'if(e.key==="Escape"){'
+ESC_FIX = ESC_HEAD + 'if(typeof cz!=="undefined")cz.classList.remove("open");'
+if ESC_HEAD in s and ESC_FIX not in s:
+    s = s.replace(ESC_HEAD, ESC_FIX, 1)
 # 2
 if "guest-host.js" not in s:
     s = s.replace("</head>", '<script src="guest-host.js"></script>\n</head>', 1)
@@ -72,11 +73,18 @@ if FADE_OLD in s:
     if "fadeTimer=null, fadeN=0;" not in s or "dv=audio.volume/steps; fadeN=0;" not in s:
         notes.append("WARNING: iPhone sound fade-out fix only partly applied")
 
+# Google Calendar fix: "20270730T000000Z/20270731T000000Z" makes a 24h UTC event (07:00-07:00 in Java,
+# 02:00-02:00 in Germany); plain dates "20270730/20270731" make it a proper all-day event.
+for d in ("1", "2"):
+    s = s.replace('EVT.start%s+"T000000Z",EVT.end%s+"T000000Z"' % (d, d), 'EVT.start%s,EVT.end%s' % (d, d))
+if 'T000000Z"' in s:
+    notes.append("WARNING: Google Calendar all-day fix not applied - check the Add to calendar code")
+
 # sanity checks the sync relies on
 for needle in ("let db", "let guest", "const guestId", "function nameFromId", "function showGuest", 'db.doc("rsvps/"'):
     if needle not in s:
         notes.append(f"WARNING: index.html no longer contains `{needle}` - rsvp.js may need adapting")
-if 'cz.classList.remove("open")' not in s:
+if ESC_FIX not in s:
     notes.append("WARNING: could not patch the Escape handler")
 
 if s != orig:

@@ -268,12 +268,6 @@
   @media (min-width:1025px){.card-links .cal-btn{width:auto;min-width:528px}}
   @media (min-width:641px) and (max-width:1024px){.card-links .cal-btn{min-width:280px}}
   @media (max-width:640px){.card-links .cal-btn{max-width:240px}}
-  .cal-dropdown{display:none;grid-template-columns:1fr;gap:.25rem;margin-top:.25rem;position:relative;z-index:6;width:100%;max-width:420px;margin-left:auto;margin-right:auto;pointer-events:auto}
-  .cal-dropdown.open{display:grid}
-  @media (min-width:1025px){.cal-dropdown{grid-template-columns:repeat(2,260px);width:auto;max-width:none;justify-content:center}}
-  .cal-opt{color:#c8d8c0 !important;text-decoration:none;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.45rem 1rem;background:rgba(31,74,44,.7);border-radius:2px;transition:background .2s;white-space:nowrap;-webkit-tap-highlight-color:rgba(255,255,255,.1);touch-action:manipulation;cursor:pointer}
-  .cal-opt:hover{background:#1f4a2c;color:#fff !important;text-decoration:none}
-  .cal-opt .ico{width:11px;height:11px;flex:none}
   body:not(.opened) .card-links{opacity:0}
   body.opened .card-links{animation:openIn 1s 1.3s ease both}
   .actionbar{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;flex-direction:column;align-items:center;
@@ -778,12 +772,6 @@
       <a href="#" id="conciergeLink"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5h8l1 5.5h-9z"/><path d="M2.5 8.5c1.5-2 8.5-2 10 0"/><circle cx="6" cy="17" r="2.6"/><circle cx="12" cy="17.6" r="2"/><path d="M12.8 14.2l7.7.8"/><path d="M20.5 15l1-4"/></svg>Contact concierge</a>
       <a href="#" id="calLink" class="cal-btn"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="14" x2="12" y2="14" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="14" x2="16" y2="14" stroke-width="2" stroke-linecap="round"/></svg>Add to calendar</a>
     </div>
-    <div class="cal-dropdown" id="calDropdown">
-      <a href="#" class="cal-opt" id="calGoogle"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15.5 9.5L12 13 8.5 9.5"/></svg>Google Calendar</a>
-      <a href="#" class="cal-opt" id="calApple"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15.5 9.5L12 13 8.5 9.5"/></svg>Apple Calendar</a>
-      <a href="#" class="cal-opt" id="calOutlook"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15.5 9.5L12 13 8.5 9.5"/></svg>Outlook</a>
-      <a href="#" class="cal-opt" id="calIcs"><svg viewBox="0 0 24 24" class="ico" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M15.5 9.5L12 13 8.5 9.5"/></svg>Download .ics file</a>
-    </div>
     <span class="away-below" id="cd" style="display:none"></span>
   </div>
   <nav class="actionbar">
@@ -996,62 +984,35 @@ const logi=document.getElementById("logistics");
 document.getElementById("logiLink").addEventListener("click",e=>{e.preventDefault();logi.classList.add("open");logi.scrollTop=0;});
 document.getElementById("closeL").onclick=()=>logi.classList.remove("open");
 logi.addEventListener("click",e=>{if(e.target===logi)logi.classList.remove("open")});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(typeof cz!=="undefined")cz.classList.remove("open");logi.classList.remove("open");notes.classList.remove("open");venue.classList.remove("open");modal.classList.remove("open");calDropdown.classList.remove("open");}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(typeof cz!=="undefined")cz.classList.remove("open");logi.classList.remove("open");notes.classList.remove("open");venue.classList.remove("open");modal.classList.remove("open");if(window.calDropdown)calDropdown.classList.remove("open");}});
 // ---- Add to Calendar
 (function(){
-  const calDrop=document.getElementById("calDropdown");
-  const EVT={
-    title:"Nina & Sevo Wedding",
-    loc:"Plataran Borobudur Resort & Spa, Borobudur, Magelang, Central Java, Indonesia",
-    start1:"20270730",end1:"20270731", // day 1 all-day
-    start2:"20270731",end2:"20270801"  // day 2 all-day
-  };
+  const LOC="Plataran Borobudur Resort & Spa, Borobudur, Magelang, Central Java, Indonesia";
   function icsContent(){
-    const uid1="nina-sevo-wedding-day1@wedding2027";
-    const uid2="nina-sevo-wedding-day2@wedding2027";
     return [
       "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Nina & Sevo Wedding//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH",
-      "BEGIN:VEVENT","UID:"+uid1,"DTSTART;VALUE=DATE:"+EVT.start1,"DTEND;VALUE=DATE:"+EVT.end1,
-      "SUMMARY:Nina & Sevo Wedding – Day 1 (Javanese Ceremony)","LOCATION:"+EVT.loc,
+      "BEGIN:VEVENT","UID:nina-sevo-wedding-day1@wedding2027",
+      "DTSTART;VALUE=DATE:20270730","DTEND;VALUE=DATE:20270731",
+      "SUMMARY:Nina & Sevo Wedding – Day 1 (Javanese Ceremony)","LOCATION:"+LOC,
       "DESCRIPTION:Javanese themed ceremony\\, regional cuisine\\, and a night of cultural performance.","END:VEVENT",
-      "BEGIN:VEVENT","UID:"+uid2,"DTSTART;VALUE=DATE:"+EVT.start2,"DTEND;VALUE=DATE:"+EVT.end2,
-      "SUMMARY:Nina & Sevo Wedding – Day 2 (International Reception)","LOCATION:"+EVT.loc,
+      "BEGIN:VEVENT","UID:nina-sevo-wedding-day2@wedding2027",
+      "DTSTART;VALUE=DATE:20270731","DTEND;VALUE=DATE:20270801",
+      "SUMMARY:Nina & Sevo Wedding – Day 2 (International Reception)","LOCATION:"+LOC,
       "DESCRIPTION:International reception dinner with a German touch.","END:VEVENT",
       "END:VCALENDAR"
     ].join("\r\n");
   }
-  function googleUrl(start,end,title,desc){
-    return "https://calendar.google.com/calendar/render?action=TEMPLATE"
-      +"&text="+encodeURIComponent(title)
-      +"&dates="+start+"/"+end
-      +"&details="+encodeURIComponent(desc)
-      +"&location="+encodeURIComponent(EVT.loc);
-  }
-  document.getElementById("calLink").addEventListener("click",function(e){
-    e.preventDefault(); e.stopPropagation();
-    calDrop.classList.toggle("open");
-  });
-  document.getElementById("calGoogle").addEventListener("click",function(e){
+  document.getElementById("calLink").addEventListener("click",async function(e){
     e.preventDefault();
-    // open two Google Calendar tabs for both days
-    window.open(googleUrl(EVT.start1,EVT.end1,"Nina & Sevo Wedding – Day 1 (Javanese Ceremony)","Javanese themed ceremony, regional cuisine, and a night of cultural performance."),"_blank");
-    setTimeout(()=>window.open(googleUrl(EVT.start2,EVT.end2,"Nina & Sevo Wedding – Day 2 (International Reception)","International reception dinner with a German touch."),"_blank"),400);
-    calDrop.classList.remove("open");
-  });
-  function downloadIcs(){
-    const blob=new Blob([icsContent()],{type:"text/calendar;charset=utf-8"});
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);
-    a.download="nina-sevo-wedding.ics";
-    document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
-    calDrop.classList.remove("open");
-  }
-  document.getElementById("calApple").addEventListener("click",function(e){e.preventDefault();downloadIcs();});
-  document.getElementById("calOutlook").addEventListener("click",function(e){e.preventDefault();downloadIcs();});
-  document.getElementById("calIcs").addEventListener("click",function(e){e.preventDefault();downloadIcs();});
-  // close dropdown on outside click
-  document.addEventListener("click",function(e){
-    if(!e.target.closest("#calLink")&&!e.target.closest("#calDropdown"))calDrop.classList.remove("open");
+    const dl=window.claude ? await window.claude.use("downloads") : null;
+    if(dl){
+      await dl.save({filename:"nina-sevo-wedding.ics", data: new TextEncoder().encode(icsContent())});
+    } else {
+      const blob=new Blob([icsContent()],{type:"text/calendar;charset=utf-8"});
+      const a=document.createElement("a");
+      a.href=URL.createObjectURL(blob); a.download="nina-sevo-wedding.ics";
+      document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+    }
   });
 })();
 // ---- Place the background photo: Borobudur's stupa sits right on top of the first divider line

@@ -80,6 +80,11 @@ for d in ("1", "2"):
 if 'T000000Z"' in s:
     notes.append("WARNING: Google Calendar all-day fix not applied - check the Add to calendar code")
 
+# Escape handler: it closes calDropdown, which later versions removed -> TypeError on every Escape.
+CAL_GUARD = 'if(window.calDropdown)calDropdown.classList.remove("open");'
+if 'id="calDropdown"' not in s and CAL_GUARD not in s:
+    s = s.replace('calDropdown.classList.remove("open");', CAL_GUARD)
+
 # sanity checks the sync relies on
 for needle in ("let db", "let guest", "const guestId", "function nameFromId", "function showGuest", 'db.doc("rsvps/"'):
     if needle not in s:

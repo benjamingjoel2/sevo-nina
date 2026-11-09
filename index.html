@@ -266,7 +266,7 @@
   body.opened .card-links{animation:openIn 1s 1.3s ease both}
   .actionbar{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;flex-direction:column;align-items:center;
     background:rgba(10,12,10,.88);backdrop-filter:blur(6px);padding:.7rem 1.2rem calc(.7rem + env(safe-area-inset-bottom))}
-  .bar-rsvp{color:#f3ede0 !important;text-decoration:none;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;opacity:.9;transition:opacity .2s}
+  .bar-rsvp{color:#f3ede0 !important;text-decoration:none;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;opacity:.9;transition:opacity .2s;white-space:nowrap}
   .bar-rsvp:hover{opacity:1}
   body:not(.opened) .actionbar{opacity:0}
   body.opened .actionbar{animation:openIn 1s 1.05s ease both}
@@ -536,6 +536,7 @@
   @media (max-width:640px){
     main.hero nav.actionbar{gap:.45rem !important;padding:.7rem 1rem calc(.75rem + env(safe-area-inset-bottom)) !important}
     main.hero nav.actionbar a{font-size:.68rem !important;letter-spacing:.18em !important;gap:.5rem !important}
+    main.hero nav.actionbar .bar-rsvp{font-size:clamp(.52rem,.68rem + .5vw,.68rem) !important;letter-spacing:.08em !important}
     main.hero nav.actionbar .ico{width:14px !important;height:14px !important}
     main.hero{padding-bottom:142px !important}
   }

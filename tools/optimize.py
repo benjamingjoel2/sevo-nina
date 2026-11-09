@@ -96,13 +96,13 @@ def main():
     for name in names:
         path = os.path.join(ROOT, name)
         ext = name.lower().rsplit(".", 1)[-1] if "." in name else ""
-        if ext not in ("jpg", "jpeg", "png", "ttf", "mp3") or not os.path.isfile(path):
+        if ext not in ("jpg", "jpeg", "png", "ttf", "otf", "mp3") or not os.path.isfile(path):
             continue
         data = open(path, "rb").read()
         if done.get(name) == sha(data):
             continue  # already optimized
         try:
-            new = {"jpg": jpeg, "jpeg": jpeg, "png": png, "ttf": font, "mp3": mp3}[ext](path, name)
+            new = {"jpg": jpeg, "jpeg": jpeg, "png": png, "ttf": font, "otf": font, "mp3": mp3}[ext](path, name)
         except Exception as e:
             print(f"skip {name}: {e}", file=sys.stderr)
             continue

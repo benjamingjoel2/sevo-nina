@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shrink the site's images and fonts in place (same file names, so index.html needs no change).
+"""Shrink the site's images, fonts and audio in place (same file names, so index.html needs no change).
 
 Safe to run again and again: files it already optimized are recorded in tools/optimized.json
 (by content hash) and skipped. Run it after every artifact sync:  python3 tools/optimize.py
@@ -60,6 +60,18 @@ def png(path, name):
     return out.getvalue()
 
 
+def mp3(path, name):
+    import subprocess, tempfile
+    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as t:
+        tmp = t.name
+    try:
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", path, "-map_metadata", "-1",
+                        "-codec:a", "libmp3lame", "-b:a", "128k", tmp], check=True)
+        return open(tmp, "rb").read()
+    finally:
+        os.remove(tmp)
+
+
 def font(path, name):
     from fontTools import subset
     opts = subset.Options()
@@ -78,16 +90,19 @@ def font(path, name):
 def main():
     done = json.load(open(MANIFEST)) if os.path.exists(MANIFEST) else {}
     before = after = 0
-    for name in sorted(os.listdir(ROOT)):
+    names = sorted(os.listdir(ROOT))
+    if os.path.isdir(os.path.join(ROOT, "audio")):
+        names += ["audio/" + n for n in sorted(os.listdir(os.path.join(ROOT, "audio")))]
+    for name in names:
         path = os.path.join(ROOT, name)
         ext = name.lower().rsplit(".", 1)[-1] if "." in name else ""
-        if ext not in ("jpg", "jpeg", "png", "ttf") or not os.path.isfile(path):
+        if ext not in ("jpg", "jpeg", "png", "ttf", "mp3") or not os.path.isfile(path):
             continue
         data = open(path, "rb").read()
         if done.get(name) == sha(data):
             continue  # already optimized
         try:
-            new = {"jpg": jpeg, "jpeg": jpeg, "png": png, "ttf": font}[ext](path, name)
+            new = {"jpg": jpeg, "jpeg": jpeg, "png": png, "ttf": font, "mp3": mp3}[ext](path, name)
         except Exception as e:
             print(f"skip {name}: {e}", file=sys.stderr)
             continue

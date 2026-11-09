@@ -791,7 +791,7 @@
     <h2 class="vtitle">About the venue</h2>
     <div class="vbody">
       <p>Set amid volcanoes, rice fields and tropical rainforest, beside the Borobudur Temple.</p>
-      <p class="vgap">Expect two days of celebration: one Javanese themed day, with a spiritual ceremony, regional cuisine and a cultural performance — the next day, a night of international reception dinner with a touch of local German tradition.</p>
+      <p class="vgap">Expect two days of celebration: one Javanese themed day, with a spiritual ceremony, regional cuisine and a cultural peformance night — the next day, an international reception dinner with a touch of local German tradition.</p>
     </div>
   </div>
 </div>
@@ -850,135 +850,168 @@
   tick(); setInterval(tick,60000);
 })();
 
-// Soundscape, synthesized with Web Audio:
-// a quiet Javanese gamelan loop that plays the whole time, with calm jungle animals on top.
-// Opening: monkey → bird (2–3 s later) → gecko; then one animal moment about every 10 s.
+// ── Amanjiwo Soundscape ──────────────────────────────────────────────────────
+// Real Amanjiwo ambient bed + synthesised gongs (4 types) + real monkey & rooster.
+// Mobile-safe: AudioContext created AND resumed inside the user-gesture handler;
+// all sound work deferred to the .then() so iOS/Android never block it.
 const Birds=(function(){
-  let ctx, master, bus, rev, gam, on=false, timers=[];
-  const R=(a,b)=>a+Math.random()*(b-a);
-  // ---------- plumbing
-  function reverb(){
-    const len=ctx.sampleRate*2, buf=ctx.createBuffer(2,len,ctx.sampleRate);
-    for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);}
-    const cv=ctx.createConvolver(); cv.buffer=buf; const g=ctx.createGain(); g.gain.value=0.25; cv.connect(g); g.connect(bus); return cv;
+  let ctx, master, compNode, revNode, revGain;
+  let ambBuf=null, monkBuf=null, roostBuf=null;
+  let ambSrc=null;
+  let on=false, timers=[], loaded=false, loading=false;
+  const L={};  // named gain layers
+
+  // ── graph ──
+  function buildGraph(){
+    master=ctx.createGain(); master.gain.value=0;
+    compNode=ctx.createDynamicsCompressor();
+    compNode.threshold.value=-18; compNode.knee.value=8;
+    compNode.ratio.value=3; compNode.attack.value=0.003; compNode.release.value=0.25;
+    master.connect(compNode); compNode.connect(ctx.destination);
+
+    // reverb IR
+    const irLen=Math.floor(ctx.sampleRate*4);
+    const ir=ctx.createBuffer(2,irLen,ctx.sampleRate);
+    for(let c=0;c<2;c++){const d=ir.getChannelData(c); for(let i=0;i<irLen;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/irLen,1.8);}
+    revNode=ctx.createConvolver(); revNode.buffer=ir;
+    revGain=ctx.createGain(); revGain.gain.value=0.38;
+    revNode.connect(revGain); revGain.connect(master);
   }
-  function out(node,pan,wet,dest){
-    const p=ctx.createStereoPanner(); p.pan.value=pan||0; node.connect(p); p.connect(dest||bus);
-    if(wet){const w=ctx.createGain(); w.gain.value=wet; p.connect(w); w.connect(rev);}
+  function layer(key, vol){
+    const g=ctx.createGain(); g.gain.value=0; g.connect(master);
+    L[key]={g, vol};
   }
-  // One clean sine voice with a smooth envelope (only sines → no harsh/broken edges)
-  function tone(t,f0,f1,dur,vol,pan,wet){
-    const o=ctx.createOscillator(), g=ctx.createGain();
-    o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(f1,t+dur);
-    const a=Math.min(0.02,dur*0.25);
-    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+a); g.gain.setTargetAtTime(0,t+dur*0.5,dur*0.18);
-    o.connect(g); out(g,pan,wet??0.2); o.start(t); o.stop(t+dur*1.6+0.05);
+  function fade(key, toOn, sec){
+    const ly=L[key]; if(!ly) return;
+    const g=ly.g.gain, now=ctx.currentTime;
+    g.cancelScheduledValues(now); g.setValueAtTime(g.value,now);
+    if(toOn) g.linearRampToValueAtTime(ly.vol, now+sec);
+    else      g.linearRampToValueAtTime(0,      now+sec);
   }
-  // ---------- gamelan (continuous, quiet)
-  const SL=[146.8,164.8,196.0,220.0,246.9]; // slendro-like pentatonic (bass octave)
-  const BALUNGAN=[2,3,2,1, 2,3,5,3, 2,1,2,6, 5,3,2,1]; // a simple repeating 16-beat melody (6 = low)
-  const DEG={1:0,2:1,3:2,5:3,6:4};
-  function metal(t,f,vol,decay,pan){ // metallophone strike: fundamental + a slightly detuned twin (gentle shimmer) + one overtone
-    [[1,1],[1.006,0.6],[2.76,0.12]].forEach(([m,v],i)=>{
-      const o=ctx.createOscillator(), g=ctx.createGain(); o.frequency.value=f*m;
-      const d=i===2?decay*0.3:decay;
-      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol*v,t+0.005); g.gain.setTargetAtTime(0,t+0.01,d/4);
-      o.connect(g); out(g,pan,0.15,gam); o.start(t); o.stop(t+d+0.1);
+
+  // ── looping ambient bed ──
+  function startAmb(){
+    if(!ambBuf||!ctx) return;
+    ambSrc=ctx.createBufferSource();
+    ambSrc.buffer=ambBuf; ambSrc.loop=true;
+    ambSrc.connect(L.amb.g); ambSrc.start();
+  }
+
+  // ── gong synthesis ──
+  function strikeGong(dest,t,freq,vol,decay){
+    [{r:1,v:1},{r:1.62,v:.40},{r:2.42,v:.18},{r:3.60,v:.08}].forEach(({r,v})=>{
+      const f=freq*r;
+      const o=ctx.createOscillator(), env=ctx.createGain();
+      o.type="sine"; o.frequency.value=f;
+      env.gain.setValueAtTime(0,t);
+      env.gain.linearRampToValueAtTime(vol*v,t+0.012);
+      env.gain.exponentialRampToValueAtTime(.0001,t+decay);
+      o.connect(env); env.connect(dest); env.connect(revNode);
+      o.start(t); o.stop(t+decay+.5);
     });
   }
-  let beat=0, nextT=0; const BEAT=1.15; // slow, unhurried pulse
-  function gamelanTick(){
-    if(!on) return;
-    while(nextT < ctx.currentTime+0.4){
-      const n=BALUNGAN[beat%16], f=SL[DEG[n]]*(n===6?1:2);
-      metal(nextT, f, 0.04, 2.2, -0.1);                          // soft main melody, long ring
-      if(beat%4===3) metal(nextT, SL[DEG[n]], 0.03, 3.0, 0);     // low kenong every 4 beats
-      if(beat%16===15) gong(nextT);                              // big gong closes each cycle
-      nextT+=BEAT; beat++;
-    }
-    timers.push(setTimeout(gamelanTick,150));
+  function gong(dest,type){
+    const t=ctx.currentTime;
+    if(type===0){ strikeGong(dest,t,55,.85,13); }
+    else if(type===1){ strikeGong(dest,t,62,.75,10); strikeGong(dest,t+2.2,58,.55,8); }
+    else if(type===2){ strikeGong(dest,t,65,.7,8); strikeGong(dest,t+1.5,70,.6,7); strikeGong(dest,t+3.0,62,.5,9); }
+    else { strikeGong(dest,t,72,.65,6); strikeGong(dest,t+1.1,65,.55,7); strikeGong(dest,t+2.0,78,.60,5); strikeGong(dest,t+3.0,62,.70,8); }
   }
-  function gong(t){
-    [[55,0.09,6],[55.4,0.05,6],[110.6,0.02,3]].forEach(([f,v,d])=>{
-      const o=ctx.createOscillator(), g=ctx.createGain(); o.frequency.value=f;
-      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(v,t+0.02); g.gain.setTargetAtTime(0,t+0.05,d/4);
-      o.connect(g); out(g,0,0.3,gam); o.start(t); o.stop(t+d+0.1);
-    });
-  }
-  // ---------- animals
-  function monkey(t){ // a short, friendly macaque "ook-ook"
-    const p=R(-.4,.4);
-    for(let i=0;i<4;i++){const f=R(780,950); tone(t+i*0.17,f,f*1.35,0.12,0.09,p,0.25); tone(t+i*0.17,f*2,f*2.7,0.1,0.015,p,0.25);}
-  }
-  const birds=[
-    (t,v)=>{const p=R(-.7,.7); [[0,2100,2600,.14],[.18,2600,2300,.12],[.34,3000,3400,.1],[.48,1900,2400,.2],[.75,2800,2500,.12]].forEach(([d,a,z,l])=>tone(t+d,a,z,l,v,p));}, // magpie-robin song
-    (t,v)=>{const p=R(-.7,.7); for(let i=0;i<2;i++){const k=1+i*0.06; tone(t+i*0.8,900*k,1150*k,0.22,v*.8,p); tone(t+i*0.8+0.27,1000*k,1500*k,0.36,v,p);}}, // koel
-    (t,v)=>{const p=R(-.7,.7), b=R(1700,2100); [[0,1,1.25],[.14,1.3,1.1],[.3,1.05,1.45],[.48,1.4,1.2]].forEach(([d,a,z])=>tone(t+d,b*a,b*z,0.13,v*.8,p));}, // bulbul
-    (t,v)=>{const p=R(-.7,.7); tone(t,520,600,0.25,v*.9,p); tone(t+0.32,600,560,0.35,v,p); tone(t+0.8,560,470,0.45,v*.8,p);} // dove coo
-  ];
-  function bird(t,v){ birds[Math.floor(R(0,birds.length))](t,v); }
-  function gecko(t){ // tokek: the Indonesian tokay gecko's "to-KEK … to-KEK", slowing down; kept soft and round
-    const p=R(-.7,.7), n=3+Math.floor(R(0,3)); let tt=t, gap=0.75;
-    for(let i=0;i<n;i++){
-      const v=0.07*(1-i*0.1);
-      tone(tt,240,220,0.11,v*0.7,p,0.2);          // "to"
-      tone(tt+0.16,460,340,0.2,v,p,0.2);          // "KEK"
-      tt+=gap; gap*=1.1;
-    }
-  }
-  function snake(t){ // a soft, brief hiss in the leaves
-    const len=ctx.sampleRate*1.2, buf=ctx.createBuffer(1,len,ctx.sampleRate), d=buf.getChannelData(0);
-    for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
+
+  // ── mp3 playback helpers ──
+  function playBuf(buf, destLayer, fadeInSec, holdSec, fadeOutSec){
+    if(!buf) return;
     const src=ctx.createBufferSource(); src.buffer=buf;
-    const hp=ctx.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=3500;
-    const g=ctx.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.03,t+0.3); g.gain.linearRampToValueAtTime(0,t+1.1);
-    src.connect(hp); hp.connect(g); out(g,R(-.8,.8),0.1); src.start(t); src.stop(t+1.2);
+    const env=ctx.createGain();
+    src.connect(env); env.connect(L[destLayer].g);
+    const t=ctx.currentTime;
+    env.gain.setValueAtTime(0,t);
+    env.gain.linearRampToValueAtTime(1,t+fadeInSec);
+    env.gain.setValueAtTime(1,t+fadeInSec+holdSec);
+    env.gain.linearRampToValueAtTime(0,t+fadeInSec+holdSec+fadeOutSec);
+    src.start(t); src.stop(t+fadeInSec+holdSec+fadeOutSec+0.2);
   }
-  // ---------- running order
-  const moments=["bird","gecko","bird","monkey","bird","snake","bird","gecko"];
-  let mi=0;
-  function at(sec,fn){ timers.push(setTimeout(()=>{ if(on) fn(ctx.currentTime+0.05); }, sec*1000)); }
-  function moment(){
-    if(!on) return;
-    const m=moments[mi++ % moments.length], t=ctx.currentTime+0.05;
-    if(m==="bird") bird(t,0.06); else if(m==="gecko") gecko(t); else if(m==="monkey") monkey(t); else snake(t);
-    timers.push(setTimeout(moment, R(12000,16000)));
-  }
-  function chirps(){ // a few quiet background bird calls in between
-    if(!on) return;
-    bird(ctx.currentTime+0.05, 0.025);
-    timers.push(setTimeout(chirps, R(7000,11000)));
-  }
-  return {
-    start(){
-      if(!ctx){
-        ctx=new (window.AudioContext||window.webkitAudioContext)();
-        master=ctx.createGain(); master.gain.value=0;
-        const comp=ctx.createDynamicsCompressor(); comp.threshold.value=-20; comp.knee.value=10; comp.ratio.value=3; comp.attack.value=0.005; comp.release.value=0.3;
-        bus=ctx.createGain(); bus.gain.value=0.9; bus.connect(comp); comp.connect(master); master.connect(ctx.destination);
-        gam=ctx.createGain(); gam.gain.value=0.45; gam.connect(bus);   // gamelan sits quietly underneath
-        rev=reverb();
+
+  // ── scene schedule ──
+  function at(sec,fn){ timers.push(setTimeout(()=>{ if(on) fn(); }, sec*1000)); }
+  function G(sec, type, withMonkey=false){
+    at(sec,()=>{
+      gong(L.gong.g, type); fade("gong",true,.6);
+      timers.push(setTimeout(()=>fade("gong",false,4),9000));
+      if(withMonkey){
+        timers.push(setTimeout(()=>{
+          fade("monk",true,.3); playBuf(monkBuf,"monk",.3,3.0,.6);
+          timers.push(setTimeout(()=>fade("monk",false,.6),4500));
+        },1500));
       }
-      const go=()=>{
+    });
+  }
+  function runScene(){
+    fade("amb",true,4);
+    // opening gong + monkey, then rooster at 15s
+    G(0,  1, true);
+    at(15,()=>{ fade("roost",true,.2); playBuf(roostBuf,"roost",.2,3.5,.8); timers.push(setTimeout(()=>fade("roost",false,.8),5000)); });
+    // gong every 10s, 4 types rotating; monkey again at 90s
+    G(10,2); G(20,0); G(30,3); G(40,1);
+    G(50,2); G(60,0); G(70,3); G(80,1);
+    G(90,2,true); G(100,0); G(110,3); G(120,1);
+    G(130,2); G(140,0); G(150,3); G(160,1);
+    G(170,2); G(180,0);
+    // fade out near end
+    at(188,()=>{ fade("amb",false,14); fade("gong",false,10); });
+  }
+
+  // ── load MP3s (after AudioContext exists) ──
+  async function loadBuffers(){
+    if(loaded||loading) return;
+    loading=true;
+    try{
+      const paths=["audio/amanjiwo.mp3","audio/monkey.mp3","audio/rooster.mp3"];
+      const bufs=await Promise.all(paths.map(async p=>{
+        const r=await fetch(p); const ab=await r.arrayBuffer();
+        return new Promise((res,rej)=>ctx.decodeAudioData(ab,res,rej));
+      }));
+      [ambBuf,monkBuf,roostBuf]=bufs;
+      loaded=true;
+    }catch(e){ console.warn("soundscape load error",e); }
+    loading=false;
+  }
+
+  return {
+    // start() is called directly inside a user-gesture handler on mobile.
+    // We create the AudioContext here (synchronously), then resume() it,
+    // then — only after the promise resolves — build the graph and play.
+    start(){
+      if(on) return;
+      if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)();
+      // resume() MUST be called in the same event-loop tick as the gesture on iOS 17+
+      ctx.resume().then(async()=>{
+        if(on) return; // guard double-call
+        if(!master) buildGraph();
+        layer("amb",.72);
+        layer("gong",.9);
+        layer("monk",1.4);
+        layer("roost",.8);
+        on=true;
+        await loadBuffers();
+        startAmb();
+        runScene();
+        // fade master in
         const now=ctx.currentTime;
-        master.gain.cancelScheduledValues(now); master.gain.setValueAtTime(master.gain.value,now); master.gain.linearRampToValueAtTime(0.9, now+1.5);
-        if(!on){
-          on=true;
-          nextT=ctx.currentTime+1.2; gamelanTick();
-          at(0.2, monkey);
-          at(R(2.2,3.0), t=>bird(t,0.08));
-          at(6, gecko);
-          timers.push(setTimeout(moment, 15000));
-          timers.push(setTimeout(chirps, 9000));
-        }
-      };
-      // On mobile, resume() is async — schedule sounds only after context is running
-      const p=ctx.resume();
-      if(p&&p.then) p.then(go); else go();
+        master.gain.cancelScheduledValues(now);
+        master.gain.setValueAtTime(0,now);
+        master.gain.linearRampToValueAtTime(1,now+1.5);
+      }).catch(e=>console.warn("audio resume failed",e));
     },
     stop(){
       on=false; timers.forEach(clearTimeout); timers=[];
-      if(ctx){const now=ctx.currentTime; master.gain.cancelScheduledValues(now); master.gain.setValueAtTime(master.gain.value,now); master.gain.linearRampToValueAtTime(0, now+0.8);}
+      if(ambSrc){ try{ambSrc.stop();}catch(e){} ambSrc=null; }
+      if(ctx){
+        const now=ctx.currentTime;
+        master.gain.cancelScheduledValues(now);
+        master.gain.setValueAtTime(master.gain.value,now);
+        master.gain.linearRampToValueAtTime(0,now+0.8);
+      }
     },
     get on(){return on}
   };
@@ -1115,58 +1148,59 @@ const ICON_ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 const ICON_OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
 function paint(){snd.innerHTML=Birds.on?ICON_ON:ICON_OFF}
 
-// Sound prompt screen — user chooses before the gate appears
-let userMuted=false;
-// Pre-unlock AudioContext on any user gesture so mobile browsers allow sound
-let _audioUnlocked=false;
-// iOS 17+: treat this page's sound as media playback, so it still plays when the phone's silent switch is on
+// ── Sound prompt + mobile-safe audio start ───────────────────────────────────
+// iOS/Android rule: AudioContext.resume() MUST be called synchronously inside
+// a user-gesture handler (click / touchend). Birds.start() does this internally,
+// so we call it directly — no wrapper, no setTimeout before the call.
+// iOS 17+: audioSession.type="playback" bypasses the silent switch.
 try{ if(navigator.audioSession) navigator.audioSession.type="playback"; }catch(e){}
-function unlockAudio(){
-  if(_audioUnlocked) return;
-  _audioUnlocked=true;
-  // Create a temporary context and play a silent buffer to unlock audio on iOS/Android
-  const tmp=new (window.AudioContext||window.webkitAudioContext)();
-  const b=tmp.createBuffer(1,1,22050);
-  const s=tmp.createBufferSource(); s.buffer=b; s.connect(tmp.destination); s.start(0);
-  tmp.resume().then(()=>{ setTimeout(()=>tmp.close(),100); }).catch(()=>{});
-}
-document.addEventListener("touchstart",unlockAudio,{once:true});
-document.addEventListener("touchend",unlockAudio,{once:true});
-document.addEventListener("click",unlockAudio,{once:true});
-function startSound(){ if(userMuted||Birds.on) return; try{Birds.start(); setTimeout(paint,120);}catch(e){} paint(); }
+
+let userMuted=false;
+function startSound(){ if(userMuted||Birds.on) return; try{Birds.start();}catch(e){} setTimeout(paint,300); }
 
 const soundPrompt=document.getElementById("soundPrompt");
 function dismissPrompt(){
   soundPrompt.classList.add("gone");
   setTimeout(()=>soundPrompt.remove(),900);
 }
-document.getElementById("soundYes").addEventListener("click",()=>{
+
+// "Turn on" button — click AND touchend both call Birds.start() so iOS gets
+// the gesture synchronously on whichever event fires first; guard with userMuted.
+function handleSoundYes(){
+  if(userMuted===false && !Birds.on){ try{Birds.start();}catch(e){} }
   userMuted=false;
-  unlockAudio();
-  // Start sound with a small delay to ensure AudioContext is fully unlocked
-  Birds.start();
-  setTimeout(()=>{ if(!Birds.on){Birds.start();} paint(); },200);
-  setTimeout(paint,120);
-  paint();
+  setTimeout(paint,300);
   dismissPrompt();
-});
-// Also listen for touchend on the button for iOS
-document.getElementById("soundYes").addEventListener("touchend",()=>{unlockAudio();},{passive:true});
+}
+document.getElementById("soundYes").addEventListener("click", handleSoundYes);
+document.getElementById("soundYes").addEventListener("touchend", e=>{ e.preventDefault(); handleSoundYes(); });
+
 document.getElementById("soundSkip").addEventListener("click",()=>{
   userMuted=true;
   paint();
   dismissPrompt();
 });
+
 snd.hidden=false; paint();
+
 document.getElementById("enter").addEventListener("click",()=>{
   startSound();
   const gate=document.getElementById("gate");
   if(gate.classList.contains("opening")) return;
-  gate.classList.add("opening");                 // postcard lifts, flips open and grows to fill the screen
-  document.body.classList.add("opened");         // invitation content rises in underneath
+  gate.classList.add("opening");
+  document.body.classList.add("opened");
   setTimeout(()=>gate.classList.add("gone"),750);
 });
-snd.addEventListener("click",e=>{ e.stopPropagation(); try{ if(Birds.on){Birds.stop();userMuted=true;} else {userMuted=false;Birds.start(); setTimeout(paint,120);} }catch(err){} paint(); });
+
+// Speaker toggle button
+snd.addEventListener("click",e=>{
+  e.stopPropagation();
+  try{
+    if(Birds.on){ Birds.stop(); userMuted=true; }
+    else { userMuted=false; Birds.start(); }
+  }catch(err){}
+  setTimeout(paint,300);
+});
 
 </script>
 <script src="rsvp.js"></script>

@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1a2118">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <title>The Wedding of Nina &amp; Sevo - Save the Date</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Pinyon+Script&family=Caveat:wght@400;500&family=Jost:wght@300;400&display=swap" rel="stylesheet">
@@ -15,8 +17,8 @@
   @font-face{font-family:"FaireVar";font-style:normal;font-weight:100 900;src:url("faire-variable.ttf") format("truetype")}
   :root{--cream:#f6f1e7;--ink:#2f3a2c;--sage:#7d8c6a;--gold:#b49a62}
   *{box-sizing:border-box;margin:0;padding:0}
-  html{height:100%;background:#1a2118}
-  body{height:100%;font-family:"Jost",system-ui,sans-serif;font-weight:300;color:var(--cream);background:#1f271d;overflow-x:hidden}
+  html{height:100%;background:#1a2118;overscroll-behavior:none}
+  body{min-height:100%;font-family:"Jost",system-ui,sans-serif;font-weight:300;color:var(--cream);background:#1a2118;overflow-x:hidden;overscroll-behavior:none}
   /* Edge-to-edge immersive: extend into notch + home indicator areas */
   @supports(padding-top:env(safe-area-inset-top)){
     .hero,.gate,.sound-prompt{padding-top:env(safe-area-inset-top)}
@@ -794,7 +796,7 @@
     <h2 class="vtitle">About the venue</h2>
     <div class="vbody">
       <p>Set amid volcanoes, rice fields and tropical rainforest, beside the Borobudur Temple.</p>
-      <p class="vgap">Expect two days of celebration: one Javanese themed day, with a spiritual ceremony, regional cuisine and a cultural peformance night — the next day, an international reception dinner with a touch of local German tradition.</p>
+      <p class="vgap">Expect two days of celebration: one Javanese themed day, with a local ceremony, regional cuisine and a night of cultural performance — the next day, an international reception dinner with a touch of German tradition.</p>
     </div>
   </div>
 </div>
@@ -889,7 +891,10 @@ const Birds=(function(){
     }, dt);
   }
 
+  let onStateChange=null; // callback(newState)
+
   return {
+    onchange(fn){ onStateChange=fn; },
     start(){
       if(on) return;
       const audio=getEl();
@@ -897,12 +902,14 @@ const Birds=(function(){
       audio.play().then(()=>{
         on=true;
         fadeIn(audio, 1.5);
+        if(onStateChange) onStateChange(true);
       }).catch(e=>console.warn("audio play failed",e));
     },
     stop(){
       if(!el||!on) return;
-      fadeOut(el, 0.8, ()=>{ el.pause(); el.currentTime=0; });
       on=false;
+      fadeOut(el, 0.8, ()=>{ el.pause(); el.currentTime=0; });
+      if(onStateChange) onStateChange(false);
     },
     get on(){return on}
   };
@@ -1039,12 +1046,12 @@ const ICON_ON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 const ICON_OFF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
 function paint(){snd.innerHTML=Birds.on?ICON_ON:ICON_OFF}
 
+// Icon always reflects true audio state via callback — no guessing with setTimeout
+Birds.onchange(()=>paint());
+
 // ── Sound prompt + mobile-safe audio start ───────────────────────────────────
-// iOS/Android rule: AudioContext.resume() MUST be called synchronously inside
-// a user-gesture handler (click / touchend). Birds.start() does this internally,
-// so we call it directly — no wrapper, no setTimeout before the call.
 let userMuted=false;
-function startSound(){ if(userMuted||Birds.on) return; try{Birds.start();}catch(e){} setTimeout(paint,300); }
+function startSound(){ if(userMuted||Birds.on) return; try{Birds.start();}catch(e){} }
 
 const soundPrompt=document.getElementById("soundPrompt");
 function dismissPrompt(){
@@ -1052,12 +1059,10 @@ function dismissPrompt(){
   setTimeout(()=>soundPrompt.remove(),900);
 }
 
-// "Turn on" button — click AND touchend both call Birds.start() so iOS gets
-// the gesture synchronously on whichever event fires first; guard with userMuted.
+// "View invitation" button — click AND touchend for iOS gesture sync
 function handleSoundYes(){
   if(userMuted===false && !Birds.on){ try{Birds.start();}catch(e){} }
   userMuted=false;
-  setTimeout(paint,300);
   dismissPrompt();
 }
 document.getElementById("soundYes").addEventListener("click", handleSoundYes);
@@ -1087,7 +1092,6 @@ snd.addEventListener("click",e=>{
     if(Birds.on){ Birds.stop(); userMuted=true; }
     else { userMuted=false; Birds.start(); }
   }catch(err){}
-  setTimeout(paint,300);
 });
 
 </script>

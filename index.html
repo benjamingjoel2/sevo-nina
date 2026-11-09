@@ -853,168 +853,56 @@
   tick(); setInterval(tick,60000);
 })();
 
-// ── Amanjiwo Soundscape ──────────────────────────────────────────────────────
-// Real Amanjiwo ambient bed + synthesised gongs (4 types) + real monkey & rooster.
-// Mobile-safe: AudioContext created AND resumed inside the user-gesture handler;
-// all sound work deferred to the .then() so iOS/Android never block it.
+// ── Java Mix Soundscape ──────────────────────────────────────────────────────
+// Pre-mixed java_mix.mp3 (jungle 4K + Sultan Palace gamelan + gong/monkey/bird)
+// played via HTML5 Audio on loop. Mobile-safe: element.play() is called
+// synchronously inside the user-gesture handler so iOS grants audio permission.
 const Birds=(function(){
-  let ctx, master, compNode, revNode, revGain;
-  let ambBuf=null, monkBuf=null, roostBuf=null;
-  let ambSrc=null;
-  let on=false, timers=[], loaded=false, loading=false;
-  const L={};  // named gain layers
+  let el=null, on=false, fadeTimer=null, fadeN=0;
 
-  // ── graph ──
-  function buildGraph(){
-    master=ctx.createGain(); master.gain.value=0;
-    compNode=ctx.createDynamicsCompressor();
-    compNode.threshold.value=-18; compNode.knee.value=8;
-    compNode.ratio.value=3; compNode.attack.value=0.003; compNode.release.value=0.25;
-    master.connect(compNode); compNode.connect(ctx.destination);
-
-    // reverb IR
-    const irLen=Math.floor(ctx.sampleRate*4);
-    const ir=ctx.createBuffer(2,irLen,ctx.sampleRate);
-    for(let c=0;c<2;c++){const d=ir.getChannelData(c); for(let i=0;i<irLen;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/irLen,1.8);}
-    revNode=ctx.createConvolver(); revNode.buffer=ir;
-    revGain=ctx.createGain(); revGain.gain.value=0.38;
-    revNode.connect(revGain); revGain.connect(master);
-  }
-  function layer(key, vol){
-    const g=ctx.createGain(); g.gain.value=0; g.connect(master);
-    L[key]={g, vol};
-  }
-  function fade(key, toOn, sec){
-    const ly=L[key]; if(!ly) return;
-    const g=ly.g.gain, now=ctx.currentTime;
-    g.cancelScheduledValues(now); g.setValueAtTime(g.value,now);
-    if(toOn) g.linearRampToValueAtTime(ly.vol, now+sec);
-    else      g.linearRampToValueAtTime(0,      now+sec);
+  function getEl(){
+    if(!el){
+      el=new Audio("audio/java_mix.mp3");
+      el.loop=true;
+      el.volume=0;
+      // iOS 17+: bypass the silent switch
+      try{ if(navigator.audioSession) navigator.audioSession.type="playback"; }catch(e){}
+    }
+    return el;
   }
 
-  // ── looping ambient bed ──
-  function startAmb(){
-    if(!ambBuf||!ctx) return;
-    ambSrc=ctx.createBufferSource();
-    ambSrc.buffer=ambBuf; ambSrc.loop=true;
-    ambSrc.connect(L.amb.g); ambSrc.start();
+  function fadeIn(audio, dur){
+    clearInterval(fadeTimer);
+    const steps=40, dt=dur*1000/steps, dv=1/steps;
+    fadeTimer=setInterval(()=>{
+      audio.volume=Math.min(1, audio.volume+dv);
+      if(audio.volume>=1) clearInterval(fadeTimer);
+    }, dt);
   }
 
-  // ── gong synthesis ──
-  function strikeGong(dest,t,freq,vol,decay){
-    [{r:1,v:1},{r:1.62,v:.40},{r:2.42,v:.18},{r:3.60,v:.08}].forEach(({r,v})=>{
-      const f=freq*r;
-      const o=ctx.createOscillator(), env=ctx.createGain();
-      o.type="sine"; o.frequency.value=f;
-      env.gain.setValueAtTime(0,t);
-      env.gain.linearRampToValueAtTime(vol*v,t+0.012);
-      env.gain.exponentialRampToValueAtTime(.0001,t+decay);
-      o.connect(env); env.connect(dest); env.connect(revNode);
-      o.start(t); o.stop(t+decay+.5);
-    });
-  }
-  function gong(dest,type){
-    const t=ctx.currentTime;
-    if(type===0){ strikeGong(dest,t,55,.85,13); }
-    else if(type===1){ strikeGong(dest,t,62,.75,10); strikeGong(dest,t+2.2,58,.55,8); }
-    else if(type===2){ strikeGong(dest,t,65,.7,8); strikeGong(dest,t+1.5,70,.6,7); strikeGong(dest,t+3.0,62,.5,9); }
-    else { strikeGong(dest,t,72,.65,6); strikeGong(dest,t+1.1,65,.55,7); strikeGong(dest,t+2.0,78,.60,5); strikeGong(dest,t+3.0,62,.70,8); }
-  }
-
-  // ── mp3 playback helpers ──
-  function playBuf(buf, destLayer, fadeInSec, holdSec, fadeOutSec){
-    if(!buf) return;
-    const src=ctx.createBufferSource(); src.buffer=buf;
-    const env=ctx.createGain();
-    src.connect(env); env.connect(L[destLayer].g);
-    const t=ctx.currentTime;
-    env.gain.setValueAtTime(0,t);
-    env.gain.linearRampToValueAtTime(1,t+fadeInSec);
-    env.gain.setValueAtTime(1,t+fadeInSec+holdSec);
-    env.gain.linearRampToValueAtTime(0,t+fadeInSec+holdSec+fadeOutSec);
-    src.start(t); src.stop(t+fadeInSec+holdSec+fadeOutSec+0.2);
-  }
-
-  // ── scene schedule ──
-  function at(sec,fn){ timers.push(setTimeout(()=>{ if(on) fn(); }, sec*1000)); }
-  function G(sec, type, withMonkey=false){
-    at(sec,()=>{
-      gong(L.gong.g, type); fade("gong",true,.6);
-      timers.push(setTimeout(()=>fade("gong",false,4),9000));
-      if(withMonkey){
-        timers.push(setTimeout(()=>{
-          fade("monk",true,.3); playBuf(monkBuf,"monk",.3,3.0,.6);
-          timers.push(setTimeout(()=>fade("monk",false,.6),4500));
-        },1500));
-      }
-    });
-  }
-  function runScene(){
-    fade("amb",true,4);
-    // opening gong + monkey, then rooster at 15s
-    G(0,  1, true);
-    at(15,()=>{ fade("roost",true,.2); playBuf(roostBuf,"roost",.2,3.5,.8); timers.push(setTimeout(()=>fade("roost",false,.8),5000)); });
-    // gong every 10s, 4 types rotating; monkey again at 90s
-    G(10,2); G(20,0); G(30,3); G(40,1);
-    G(50,2); G(60,0); G(70,3); G(80,1);
-    G(90,2,true); G(100,0); G(110,3); G(120,1);
-    G(130,2); G(140,0); G(150,3); G(160,1);
-    G(170,2); G(180,0);
-    // fade out near end
-    at(188,()=>{ fade("amb",false,14); fade("gong",false,10); });
-  }
-
-  // ── load MP3s (after AudioContext exists) ──
-  async function loadBuffers(){
-    if(loaded||loading) return;
-    loading=true;
-    try{
-      const paths=["audio/amanjiwo.mp3","audio/monkey.mp3","audio/rooster.mp3"];
-      const bufs=await Promise.all(paths.map(async p=>{
-        const r=await fetch(p); const ab=await r.arrayBuffer();
-        return new Promise((res,rej)=>ctx.decodeAudioData(ab,res,rej));
-      }));
-      [ambBuf,monkBuf,roostBuf]=bufs;
-      loaded=true;
-    }catch(e){ console.warn("soundscape load error",e); }
-    loading=false;
+  function fadeOut(audio, dur, cb){
+    clearInterval(fadeTimer);
+    const steps=40, dt=dur*1000/steps, dv=audio.volume/steps; fadeN=0;
+    fadeTimer=setInterval(()=>{
+      audio.volume=Math.max(0, audio.volume-dv);
+      if(audio.volume<=0||++fadeN>=steps){ clearInterval(fadeTimer); if(cb) cb(); }
+    }, dt);
   }
 
   return {
-    // start() is called directly inside a user-gesture handler on mobile.
-    // We create the AudioContext here (synchronously), then resume() it,
-    // then — only after the promise resolves — build the graph and play.
     start(){
       if(on) return;
-      if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)();
-      // resume() MUST be called in the same event-loop tick as the gesture on iOS 17+
-      ctx.resume().then(async()=>{
-        if(on) return; // guard double-call
-        if(!master) buildGraph();
-        layer("amb",.72);
-        layer("gong",.9);
-        layer("monk",1.4);
-        layer("roost",.8);
+      const audio=getEl();
+      audio.volume=0;
+      audio.play().then(()=>{
         on=true;
-        await loadBuffers();
-        startAmb();
-        runScene();
-        // fade master in
-        const now=ctx.currentTime;
-        master.gain.cancelScheduledValues(now);
-        master.gain.setValueAtTime(0,now);
-        master.gain.linearRampToValueAtTime(1,now+1.5);
-      }).catch(e=>console.warn("audio resume failed",e));
+        fadeIn(audio, 1.5);
+      }).catch(e=>console.warn("audio play failed",e));
     },
     stop(){
-      on=false; timers.forEach(clearTimeout); timers=[];
-      if(ambSrc){ try{ambSrc.stop();}catch(e){} ambSrc=null; }
-      if(ctx){
-        const now=ctx.currentTime;
-        master.gain.cancelScheduledValues(now);
-        master.gain.setValueAtTime(master.gain.value,now);
-        master.gain.linearRampToValueAtTime(0,now+0.8);
-      }
+      if(!el||!on) return;
+      fadeOut(el, 0.8, ()=>{ el.pause(); el.currentTime=0; });
+      on=false;
     },
     get on(){return on}
   };
@@ -1155,9 +1043,6 @@ function paint(){snd.innerHTML=Birds.on?ICON_ON:ICON_OFF}
 // iOS/Android rule: AudioContext.resume() MUST be called synchronously inside
 // a user-gesture handler (click / touchend). Birds.start() does this internally,
 // so we call it directly — no wrapper, no setTimeout before the call.
-// iOS 17+: audioSession.type="playback" bypasses the silent switch.
-try{ if(navigator.audioSession) navigator.audioSession.type="playback"; }catch(e){}
-
 let userMuted=false;
 function startSound(){ if(userMuted||Birds.on) return; try{Birds.start();}catch(e){} setTimeout(paint,300); }
 

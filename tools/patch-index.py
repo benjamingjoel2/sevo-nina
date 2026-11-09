@@ -60,6 +60,18 @@ SHARE = ('<meta name="description" content="30 – 31 July 2027 · Plataran Boro
 if 'property="og:image"' not in s:
     s = s.replace("</head>", SHARE + "</head>", 1)
 
+# iPhone fix: iOS ignores audio.volume (always 1), so a volume-based fade-out never ends and the
+# music never stops. Stop after the fade's step count as well.
+FADE_OLD = "if(audio.volume<=0){ clearInterval(fadeTimer); if(cb) cb(); }"
+FADE_NEW = "if(audio.volume<=0||++fadeN>=steps){ clearInterval(fadeTimer); if(cb) cb(); }"
+if FADE_OLD in s:
+    s = s.replace(FADE_OLD, FADE_NEW).replace("let el=null, on=false, fadeTimer=null;",
+                                              "let el=null, on=false, fadeTimer=null, fadeN=0;")
+    s = s.replace("const steps=40, dt=dur*1000/steps, dv=audio.volume/steps;",
+                  "const steps=40, dt=dur*1000/steps, dv=audio.volume/steps; fadeN=0;")
+    if "fadeTimer=null, fadeN=0;" not in s or "dv=audio.volume/steps; fadeN=0;" not in s:
+        notes.append("WARNING: iPhone sound fade-out fix only partly applied")
+
 # sanity checks the sync relies on
 for needle in ("let db", "let guest", "const guestId", "function nameFromId", "function showGuest", 'db.doc("rsvps/"'):
     if needle not in s:
